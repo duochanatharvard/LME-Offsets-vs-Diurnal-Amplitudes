@@ -22,7 +22,7 @@ If you have issues implementing these scripts, or identify any deficiencies, ple
 ## Table of Contents
  * [Quick reproduction of Figures](#quick-reproduction-of-figures)
  * [Full Analysis](#full-analysis)
-  * [A. Getting Started](#a-get-started)
+  * [A. Getting Started](#a-getting-started)
   * [B. Diurnal Cycles](#b-diurnal-cycles)
   * [C. LME Intercomparison](#c-lme-intercomparison)
   * [D. Merging DA and LME](#d-merging-da-and-lme)
