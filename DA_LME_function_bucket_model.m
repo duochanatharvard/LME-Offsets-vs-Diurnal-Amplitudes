@@ -62,7 +62,7 @@ function [da_out,bias_out] = DA_LME_function_bucket_model(ct_reg,t_id,shade_id,.
         save_app = [save_app,'_wind_',num2str(wind_id)];
     else
         save_app = [save_app,'_wind_',num2str(wind_id(1)),'-',num2str(wind_id(end))];
-        lgd = {'x0','x0.2','x0.4','x0.6','x0.8','x1','x1.2    '};
+        lgd = {'x0','x0.5','x0.1','x1.5','x2','x2.5','x3    '};
         col_model = col(6,:);
         ct_fig = 6;
         num_var = numel(wind_id);
@@ -91,7 +91,7 @@ function [da_out,bias_out] = DA_LME_function_bucket_model(ct_reg,t_id,shade_id,.
     clear('P')
     % Set variables with default values                              % TODO
     P.deck_time       = 240;
-    P.s_environment   = 10;
+    P.s_environment   = 7;
     P.solar_shading   = 0.4;
     P.thickness       = 0.01; 
     P.wind_experience = 0.6;
@@ -136,7 +136,7 @@ function [da_out,bias_out] = DA_LME_function_bucket_model(ct_reg,t_id,shade_id,.
                              P.diamter = 0.08;   P.depth = 0.12;
                     end
                 case 6,
-                    P.wind_experience = (wind_id(ct_var) - 1) * 0.2;
+                    P.wind_experience = (wind_id(ct_var) - 1) * 1/2;
                 case 7,
                     P.thickness       = thick_list(thick_id(ct_var));
             end

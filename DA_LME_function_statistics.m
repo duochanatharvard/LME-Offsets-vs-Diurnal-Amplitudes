@@ -33,6 +33,7 @@ function output = DA_LME_function_statistics(yr_start,reg_sea)
     ipt_quan = quantile(ipt_member,[0.025 0.25 0.75 0.975],1);
     output.slp = slp;
     output.slp_quan = slp_quan;
+    output.ipt = ipt;
     
     fitted_eri = slp_member*x_eri + ipt_member;
     output.is_ERI_in = y_eri > min(fitted_eri) & y_eri < max(fitted_eri); 
@@ -42,8 +43,8 @@ function output = DA_LME_function_statistics(yr_start,reg_sea)
     % *********************************************************************
     output.da_quan_ex_ERI  = quantile(x,[0 0.025 0.25 0.5 0.75 0.975 1]);
     output.da_quan         = quantile([x;x_eri],[0 0.025 0.25 0.5 0.75 0.975 1]);
-    output.lme_quan_ex_ERI = quantile(y,[0 0.025 0.25 0.5 0.75 0.975 1]);
-    output.lme_quan        = quantile([y;y_eri],[0 0.025 0.25 0.5 0.75 0.975 1]);
+    output.lme_quan_ex_ERI = quantile(y,[0 0.025 0.05 0.1 0.25 0.5 0.75 0.975 1]);
+    output.lme_quan        = quantile([y;y_eri],[0 0.025 0.15 0.2 0.25 0.5 0.75 0.975 1]);
     
     % *********************************************************************
     % Porject and find the marginal distrubution of individual points

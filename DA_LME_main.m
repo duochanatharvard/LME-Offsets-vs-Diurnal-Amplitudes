@@ -9,7 +9,7 @@ clear;
 % size_id   = 3;      % 1. small bucket        3. large bucket
 % mixing_id = 11;     % 1. all eri            11. all bucket
 % wind_id   = 1:3;    % 1. less wind           7. more wind
-% thick_id  = 5;      % 1. thing bucket        5. thick bucket
+% thick_id  = 5;      % 1. thing bucket        7. thick bucket
 % 
 %  DA_LME_function_bucket_model(ct_reg,t_id,shade_id,alpha_id,size_id,
 %                                      mixing_id,wind_id,thick_id,eri_bias)
@@ -77,7 +77,7 @@ for ct_yr_start = 1970
     end
 end
 
-% *************************************************************************
+%% *************************************************************************
 % Figure 4: First compute statistics and then generate plot
 % *************************************************************************
 for ct_yr_start = 1880:1:1990
@@ -94,6 +94,7 @@ for ct_yr_start = 1880:1:1990
         Tab_r2_quan(ct_prd,ct_reg_sea,:)           = output.R2_quan;
         
         Tab_slp(ct_prd,ct_reg_sea)                 = output.slp;
+        Tab_ipt(ct_prd,ct_reg_sea)                 = output.ipt;
         Tab_slp_quan(ct_prd,ct_reg_sea,:)          = output.slp_quan;
         Tab_is_eri_in(ct_prd,ct_reg_sea)           = output.is_ERI_in;
 
@@ -108,13 +109,14 @@ for ct_yr_start = 1880:1:1990
 end
 save('DA_LME_Statistics.mat','Tab_r','Tab_n','Tab_r2','Tab_r2_quan','Tab_slp','Tab_slp_quan',...
         'Tab_da_quan','Tab_da_quan_ex_ERI','Tab_lme_quan','Tab_lme_quan_ex_ERI',...
-        'Tab_pctg','Tab_pctg_std','Tab_is_eri_in','-v7.3')
-
+        'Tab_pctg','Tab_pctg_std','Tab_is_eri_in','Tab_ipt','-v7.3')
+%%
 load('DA_LME_Statistics.mat');        
 
-for ct_fig = 1:4
+% close all;
+for ct_fig = 3
 
-    sea_list = [5 4 3 2 1];
+    sea_list = [1];
 
     switch ct_fig,
         case 1,
@@ -123,25 +125,29 @@ for ct_fig = 1:4
             y_label = 'R^2';
             offset  = -1;
             aa = [0.2 0.5 0.8];
+            st = '-';
         case 2,
             pic     = Tab_da_quan_ex_ERI(:,:,4);
             pic_std = Tab_da_quan_ex_ERI(:,:,[2 3 5 6]);
             y_label = 'Diurnal Amplitude (^oC)';
             offset  = - 0.5;
             aa = [0.1 0.4];
+            st = '-';
         case 3,
-            pic     = Tab_lme_quan_ex_ERI(:,:,7) - Tab_lme_quan_ex_ERI(:,:,1);
-            % pic     = Tab_lme_quan(:,:,7) - Tab_lme_quan(:,:,1);
+            pic     = Tab_lme_quan_ex_ERI(:,:,end) - Tab_lme_quan_ex_ERI(:,:,5);
+            pic     = Tab_lme_quan(:,:,end) - Tab_lme_quan(:,:,5);
             pic_std = Tab_lme_quan_ex_ERI(:,:,[2 3 5 6]) * nan;
             y_label = 'LME offset range (^oC)';
-            offset  = -1.5;
-            aa = [0.3 1.2];          
+            offset  = -1;
+            aa = [0.3 .7]; 
+            st = '--';
         case 4,
             pic     = Tab_slp;
             pic_std = Tab_slp_quan;
             y_label = 'Slope (^oC / ^oC)';
             offset  = -20;
-            aa = [-5 0 5];               
+            aa = [-5 0 5];  
+            st = '-';
     end
 
     if ct_fig == 4,
@@ -152,9 +158,11 @@ for ct_fig = 1:4
     y_tick = []; for i = numel(sea_list):-1:1 y_tick  = [y_tick aa+offset*(i-1)];  end
     y_tick_label = repmat(aa,1,numel(sea_list));
 
-    figure(ct_fig);  clf; hold on;
+    figure(ct_fig); %  clf; hold on;
     col_list = [0, 0.7, 0.1,  0.44  0.9];
+    ct_lines = 0;
     for   ct_sea     =  sea_list
+        ct_lines   = ct_lines + 1;
         for ct = 1:1:111
             x          = 1889+ct;
             y          = [squeeze(pic_std(ct,ct_sea,1:2))'  pic(ct,ct_sea)  squeeze(pic_std(ct,ct_sea,3:4))'];
@@ -162,24 +170,66 @@ for ct_fig = 1:4
             input_type = 2;
             bar_width  = 1;
             col        = col_list(ct_sea);
-            [~,RGB(:,:,ct_sea)]    = CDF_bar_quantile(x,y + offset*(ct_sea-1),col,q_list,input_type,bar_width);
+            [~,RGB(:,:,ct_sea)]    = CDF_bar_quantile(x,y + offset*(ct_lines-1),col,q_list,input_type,bar_width);
         end
     end
 
-    for   ct_sea     = sea_list
+    ct_lines = 0;
+    for   ct_sea   = sea_list
         x          = 1890:2000;
         y          = pic(:,ct_sea);
+        ct_lines   = ct_lines + 1;
         if ismember(ct_sea,[1 4]),
-            h(ct_sea)  = CDF_histplot(x,y + offset*(ct_sea-1),'-',RGB(2,:,ct_sea)*.85,2);
+            h(ct_sea)  = CDF_histplot(x,y + offset*(ct_lines-1),st,RGB(2,:,ct_sea)*.85,2);
         else
-            h(ct_sea)  = CDF_histplot(x,y + offset*(ct_sea-1),'-',1-(1-RGB(2,:,ct_sea))*1,2);
+            h(ct_sea)  = CDF_histplot(x,y + offset*(ct_lines-1),st,1-(1-RGB(2,:,ct_sea))*1,2);
         end
     end
 
-    CDF_panel([1890 2000 y_lim],'','','Centered year',y_label)
-    daspect([111 (y_lim(2)-y_lim(1))*1*(5/numel(sea_list)) 1])
+    CDF_panel([1890 2000 y_lim],'','','Centered year',y_label,'fontsize',20)
+    daspect([111 (y_lim(2)-y_lim(1))*1*(5/numel(sea_list))*0.8 1])
     set(gca,'ytick',y_tick,'yticklabel',y_tick_label);
 
     set(gcf,'position',[.1 1 15 8],'unit','inches')
     set(gcf,'position',[.1 1 15 8],'unit','inches')
+
+    file_save = ['/Volumes/Untitled/01_Research/03_DATA/LME_intercomparison/Fig_sliding_end_point_R2_',num2str(ct_fig),'.png'];
+    CDF_save(ct_fig,'png',300,file_save);
 end
+
+%% compute the residual
+clear;
+load('All_lme_offsets_and_diurnal_amplitudes.mat');
+load('DA_LME_Statistics.mat','Tab_slp','Tab_ipt');   
+
+clear('y_hat')
+for ct_reg = 1
+    for ct_yr = 1:111
+        x = da(2:end,ct_yr,ct_reg);
+        y = lme(2:end,ct_yr,ct_reg);
+        y_hat(:,ct_yr) = x * Tab_slp(ct_yr,ct_reg) + Tab_ipt(ct_yr,ct_reg);
+    end
+end
+
+figure(2);clf;
+
+a = lme(2:end,:,ct_reg)'-y_hat';
+aa = CDC_std(lme(2:end,:,ct_reg),1);
+bb = CDC_std(y_hat,1);
+cc = CDC_std(a',1);
+
+nanmean(aa(:,1:40))
+nanmean(aa(:,41:end))
+nanmean(cc(:,41:end))
+
+hold on;
+h(1) = plot(1890:2000,aa,'-','linewi',3);
+h(2) = plot(1930:2000,bb(41:end),'-','linewi',3);
+h(3) = plot(1930:2000,cc(41:end),'-','linewi',3);
+grid on;
+CDF_panel([1890 2000 0 0.4],'','','Year','Std (LME offsets)','fontsize',20)
+legend(h,{'Raw LME offsets','Explained by York fit regressions','Residual'},'fontsize',20)
+
+dir_save  = '/Users/zen/Dropbox/Research/01_SST_Bucket_Intercomparison/02_Manuscript/03_Diurnal_2019/Figures/';
+file_save = [dir_save,'Residual.png'];
+CDF_save(2,'png',300,file_save);

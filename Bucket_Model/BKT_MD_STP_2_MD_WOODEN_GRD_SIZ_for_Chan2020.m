@@ -38,10 +38,10 @@ function SST_out = BKT_MD_STP_2_MD_WOODEN_GRD_SIZ_for_Chan2020(true_SST,true_AT,
     % Parameter of measurement --------------------------------------------
     t_haul = 60;
     t_deck = P.deck_time;
-    u_shield_haul = P.wind_experience;
-    u_shield_deck = P.wind_experience;
-    s_shield_haul = P.wind_experience;
-    s_shield_deck = P.wind_experience;
+    u_shield_haul = 0.6 * P.wind_experience;
+    u_shield_deck = 0.4 * P.wind_experience;
+    s_shield_haul = 1   * P.wind_experience;
+    s_shield_deck = 2/3 * P.wind_experience;
 %     u_shield_haul = 0.6;
 %     u_shield_deck = 0.4;
 %     s_shield_haul = 1;
@@ -80,6 +80,8 @@ function SST_out = BKT_MD_STP_2_MD_WOODEN_GRD_SIZ_for_Chan2020(true_SST,true_AT,
     % effective wind speed for different stage of measurement -------------
     u0_haul = sqrt(u_reduced_haul.^2 + s_reduced_haul.^2);
     u0_deck = sqrt(u_reduced_deck.^2 + s_reduced_deck.^2);
+    
+    nanmean(u0_deck(:))
 
     % Determine the Rayleigh coefficient ----------------------------------
     Re_haul = u0_haul * diameter ./ viscosity;
