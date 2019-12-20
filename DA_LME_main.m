@@ -24,19 +24,19 @@ clear;
 % *************************************************************************
 for ct_reg = [1 3 7]      % 1: tropics    3: subtropics    7: extra-tropics
     [da_out{1,ct_reg},bias_out{1,ct_reg}] = ...
-        DA_LME_function_bucket_model(ct_reg,3:4:23,     5,     1,   3,      11,   4,   5, 0.1);
+        DA_LME_function_bucket_model(ct_reg,3:4:23,     5,     1,   3,      11,   3,   5, 0.1);
     [da_out{2,ct_reg},bias_out{2,ct_reg}] = ...
-        DA_LME_function_bucket_model(ct_reg,    11,1:2:11,     1,   3,      11,   4,   5, 0.1);
+        DA_LME_function_bucket_model(ct_reg,    11,1:2:11,     1,   3,      11,   3,   5, 0.1);
     [da_out{3,ct_reg},bias_out{3,ct_reg}] = ...
-        DA_LME_function_bucket_model(ct_reg,    11,     5, 1:1:5,   3,      11,   4,   5, 0.1);
+        DA_LME_function_bucket_model(ct_reg,    11,     5, 1:1:5,   3,      11,   3,   5, 0.1);
     [da_out{4,ct_reg},bias_out{4,ct_reg}] = ...
-        DA_LME_function_bucket_model(ct_reg,    11,     5,     1, 1:3,      11,   4,   5, 0.1);
+        DA_LME_function_bucket_model(ct_reg,    11,     5,     1, 1:3,      11,   3,   5, 0.1);
     [da_out{5,ct_reg},bias_out{5,ct_reg}] = ...
-        DA_LME_function_bucket_model(ct_reg,    11,     5,     1,   3,  3:2:11,   4,   5, 0.1);
+        DA_LME_function_bucket_model(ct_reg,    11,     5,     1,   3,  3:2:11,   3,   5, 0.1);
     [da_out{6,ct_reg},bias_out{6,ct_reg}] = ...
         DA_LME_function_bucket_model(ct_reg,    11,     5,     1,   3,      11, 1:7,   5, 0.1);
     [da_out{7,ct_reg},bias_out{7,ct_reg}] = ...
-        DA_LME_function_bucket_model(ct_reg,    11,     5,     1,   3,      11,   4, 1:7, 0.1);
+        DA_LME_function_bucket_model(ct_reg,    11,     5,     1,   3,      11,   3, 1:7, 0.1);
 end
 save('Model_output.mat','da_out','bias_out','-v7.3');
 
@@ -223,13 +223,14 @@ nanmean(aa(:,41:end))
 nanmean(cc(:,41:end))
 
 hold on;
-h(1) = plot(1890:2000,aa,'-','linewi',3);
-h(2) = plot(1930:2000,bb(41:end),'-','linewi',3);
-h(3) = plot(1930:2000,cc(41:end),'-','linewi',3);
+col = lines(3);
+h(1) = CDF_histplot(1890:2000,aa,'-',col(1,:),3);
+h(2) = CDF_histplot(1930:2000,bb(41:end),'-',col(2,:),3);
+h(3) = CDF_histplot(1930:2000,cc(41:end),'-',col(3,:),3);
 grid on;
-CDF_panel([1890 2000 0 0.4],'','','Year','Std (LME offsets)','fontsize',20)
-legend(h,{'Raw LME offsets','Explained by York fit regressions','Residual'},'fontsize',20)
+CDF_panel([1890 2000 0 0.4],'','','Year','Std of groupwise offsets (^oC)','fontsize',20)
+legend(h,{'Raw groupwise offsets','Explained by York regressions','Residual'},'fontsize',20)
 
 dir_save  = '/Users/zen/Dropbox/Research/01_SST_Bucket_Intercomparison/02_Manuscript/03_Diurnal_2019/Figures/';
 file_save = [dir_save,'Residual.png'];
-CDF_save(2,'png',300,file_save);
+% CDF_save(2,'png',300,file_save);
