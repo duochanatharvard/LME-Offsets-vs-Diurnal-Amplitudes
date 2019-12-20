@@ -24,19 +24,19 @@ clear;
 % *************************************************************************
 for ct_reg = [1 3 7]      % 1: tropics    3: subtropics    7: extra-tropics
     [da_out{1,ct_reg},bias_out{1,ct_reg}] = ...
-        DA_LME_function_bucket_model(ct_reg,3:4:23,     5,     1,   3,      11,   3,   5, 0.1);
+        DA_LME_function_bucket_model(ct_reg,3:4:23,     5,     1,   1,      11,   3,   5, 0.1);
     [da_out{2,ct_reg},bias_out{2,ct_reg}] = ...
-        DA_LME_function_bucket_model(ct_reg,    11,1:2:11,     1,   3,      11,   3,   5, 0.1);
+        DA_LME_function_bucket_model(ct_reg,    11,1:2:11,     1,   1,      11,   3,   5, 0.1);
     [da_out{3,ct_reg},bias_out{3,ct_reg}] = ...
-        DA_LME_function_bucket_model(ct_reg,    11,     5, 1:1:5,   3,      11,   3,   5, 0.1);
+        DA_LME_function_bucket_model(ct_reg,    11,     5, 1:1:5,   1,      11,   3,   5, 0.1);
     [da_out{4,ct_reg},bias_out{4,ct_reg}] = ...
         DA_LME_function_bucket_model(ct_reg,    11,     5,     1, 1:3,      11,   3,   5, 0.1);
     [da_out{5,ct_reg},bias_out{5,ct_reg}] = ...
-        DA_LME_function_bucket_model(ct_reg,    11,     5,     1,   3,  3:2:11,   3,   5, 0.1);
+        DA_LME_function_bucket_model(ct_reg,    11,     5,     1,   1,  3:2:11,   3,   5, 0.1);
     [da_out{6,ct_reg},bias_out{6,ct_reg}] = ...
-        DA_LME_function_bucket_model(ct_reg,    11,     5,     1,   3,      11, 1:7,   5, 0.1);
+        DA_LME_function_bucket_model(ct_reg,    11,     5,     1,   1,      11, 1:7,   5, 0.1);
     [da_out{7,ct_reg},bias_out{7,ct_reg}] = ...
-        DA_LME_function_bucket_model(ct_reg,    11,     5,     1,   3,      11,   3, 1:7, 0.1);
+        DA_LME_function_bucket_model(ct_reg,    11,     5,     1,   1,      11,   3, 1:7, 0.1);
 end
 save('Model_output.mat','da_out','bias_out','-v7.3');
 

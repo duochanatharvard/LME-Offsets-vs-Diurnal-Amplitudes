@@ -91,16 +91,27 @@ function [da_out,bias_out] = DA_LME_function_bucket_model(ct_reg,t_id,shade_id,.
                                                   BKT_MD_PREP(P_input);
     clear('P')
     % Set variables with default values                              % TODO
-    P.deck_time       = 240;
+    P.deck_time       = (t_id - 3) * 30;
     P.s_environment   = 7;
-    P.solar_shading   = 0.4;
-    P.thickness       = 0.01; 
-    P.wind_experience = 1;
-    P.diamter         = 0.25;   
-    P.depth           = 0.2;
-    alpha             = (1-1) * 0.05;
-    init_SST          = true_AT * alpha + true_SST * (1-alpha);
+    P.solar_shading   = (shade_id - 1) * 0.1;
     thick_list        = [0.2 0.35 0.5 0.75 1 1.5 2]*0.01;
+    P.thickness       = thick_list(thick_id); 
+    P.wind_experience = (wind_id - 1) * 1/2;
+    if numel(size_id) == 1,
+        switch size_id,
+            case 1,
+                P.diamter = 0.25;   P.depth = 0.2;
+            case 2,
+                P.diamter = 0.163;  P.depth = 0.14;
+            case 3,
+                P.diamter = 0.08;   P.depth = 0.12;
+        end
+    end
+    if numel(alpha_id) == 1,
+        alpha             = (alpha_id-1) * 0.05;
+        init_SST          = true_AT * alpha + true_SST * (1-alpha);
+    end
+
 
     PP.do_sensible    = 1; 
     PP.do_latent      = 1;
