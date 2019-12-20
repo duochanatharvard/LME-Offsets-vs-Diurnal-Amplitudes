@@ -1,15 +1,17 @@
 clear;
 
 % *************************************************************************
-% Figure 1
+% Figure for offseet-diurnal relationship 
+% in response to varying distinct bucket model parameters.
+% 
 % Reference bucket
 % t_id      = 11;     % 1. initial SST        +2 for every 1 minute
 % shade_id  = 4;      % 1. all insolation     11. no insolation
 % alpha_id  = 1;      % 1. no air temperature  5. 20% air temperature
-% size_id   = 3;      % 1. small bucket        3. large bucket
+% size_id   = 1;      % 1. large bucket        3. small bucket
 % mixing_id = 11;     % 1. all eri            11. all bucket
-% wind_id   = 1:3;    % 1. less wind           7. more wind
-% thick_id  = 5;      % 1. thing bucket        7. thick bucket
+% wind_id   = 3;      % 1. less wind (x0)      7. more wind (x3)
+% thick_id  = 5;      % 1. thing bucket (2mm)  7. thick bucket (2cm)
 % 
 %  DA_LME_function_bucket_model(ct_reg,t_id,shade_id,alpha_id,size_id,
 %                                      mixing_id,wind_id,thick_id,eri_bias)
@@ -60,7 +62,7 @@ for ct_reg = [1:5]
 end
 
 % *************************************************************************
-% Figure 2: Tropics
+% Figure 3: Tropics
 % *************************************************************************
 for ct_yr_start = 1890:20:1990
     for ct_reg_sea = 1
@@ -69,7 +71,7 @@ for ct_yr_start = 1890:20:1990
 end
 
 % *************************************************************************
-% Figure 3: NH Subtropics and Extra-tropics
+% Figure 4: NH Subtropics and Extra-tropics
 % *************************************************************************
 for ct_yr_start = 1970
     for ct_reg_sea = 2:5
@@ -78,7 +80,7 @@ for ct_yr_start = 1970
 end
 
 %% *************************************************************************
-% Figure 4: First compute statistics and then generate plot
+% Data for Figure 5: First compute statistics and then generate plot
 % *************************************************************************
 for ct_yr_start = 1880:1:1990
     
@@ -110,13 +112,20 @@ end
 save('DA_LME_Statistics.mat','Tab_r','Tab_n','Tab_r2','Tab_r2_quan','Tab_slp','Tab_slp_quan',...
         'Tab_da_quan','Tab_da_quan_ex_ERI','Tab_lme_quan','Tab_lme_quan_ex_ERI',...
         'Tab_pctg','Tab_pctg_std','Tab_is_eri_in','Tab_ipt','-v7.3')
-%%
+    
+%% *************************************************************************
+% Figure 5: First compute statistics and then generate plot
+% *************************************************************************
 load('DA_LME_Statistics.mat');        
 
-% close all;
-for ct_fig = 3
+ close all;
+for ct_fig = [1 2 3 4]
+    % 1. R^2    2. Slopes   3. Diurnal amplitude range  4.  LME offset range
 
-    sea_list = [1];
+    sea_list = [1 2 3 4 5];
+    % 1. Tropical annual mean
+    % 2. DJF   3. JJA  for 20-40N
+    % 4. DJF   5. JJA  for 40-60N
 
     switch ct_fig,
         case 1,
@@ -135,12 +144,12 @@ for ct_fig = 3
             st = '-';
         case 3,
             pic     = Tab_lme_quan_ex_ERI(:,:,end) - Tab_lme_quan_ex_ERI(:,:,5);
-            pic     = Tab_lme_quan(:,:,end) - Tab_lme_quan(:,:,5);
+            % pic     = Tab_lme_quan(:,:,end) - Tab_lme_quan(:,:,5);
             pic_std = Tab_lme_quan_ex_ERI(:,:,[2 3 5 6]) * nan;
             y_label = 'LME offset range (^oC)';
             offset  = -1;
             aa = [0.3 .7]; 
-            st = '--';
+            st = '-';
         case 4,
             pic     = Tab_slp;
             pic_std = Tab_slp_quan;
@@ -194,11 +203,14 @@ for ct_fig = 3
     set(gcf,'position',[.1 1 15 8],'unit','inches')
 
     file_save = ['/Volumes/Untitled/01_Research/03_DATA/LME_intercomparison/Fig_sliding_end_point_R2_',num2str(ct_fig),'.png'];
-    CDF_save(ct_fig,'png',300,file_save);
+    % CDF_save(ct_fig,'png',300,file_save);
 end
 
-%% compute the residual
-clear;
+%% *************************************************************************
+% Figure 6: Explained variance
+% *************************************************************************
+close all;
+
 load('All_lme_offsets_and_diurnal_amplitudes.mat');
 load('DA_LME_Statistics.mat','Tab_slp','Tab_ipt');   
 

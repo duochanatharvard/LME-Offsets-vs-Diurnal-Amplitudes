@@ -1,4 +1,4 @@
-# Group-wise offsets in bucket sea surface temperature mainly reflect widespread misclassifications of engine room intake measurements
+# Systematic differences in bucket sea surface temperatures caused by misclassification of engine room intake measurements
 
 <br>
 
@@ -6,7 +6,7 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/duochanatharvard/LME_Offsets_vs_Diurnal_Amplitudes)
 
 
-Matlab scripts associated with the paper "Group-wise offsets in bucket sea surface temperature mainly reflect widespread misclassifications of engine room intake measurements" by [Duo Chan](https://github.com/duochanatharvard) and Peter Huybers.
+Matlab scripts associated with the paper "Systematic differences in bucket sea surface temperatures caused by misclassification of engine room intake measurements" by [Duo Chan](https://github.com/duochanatharvard) and Peter Huybers.
 
 All codes are [Matlab](https://www.mathworks.com/products/matlab.html) .m files.  We provide a [main](DA_LME_main.m) script for fast reproduction of Figures and bucket model simulations in the main text.  If you are reproducing the [full analysis](#full-analysis), we also provide codes and step-by-step instructions for running these codes.  "Parallel" computations using multiple CPUs are encouraged are some steps, though fast-reproduction is runnable on a laptop.  
 
