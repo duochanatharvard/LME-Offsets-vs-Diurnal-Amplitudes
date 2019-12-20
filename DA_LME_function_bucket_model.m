@@ -52,7 +52,8 @@ function [da_out,bias_out] = DA_LME_function_bucket_model(ct_reg,t_id,shade_id,.
         save_app = [save_app,'_bck_ratio_',num2str(mixing_id/10 -0.1,'%6.1f')];
     else
         save_app = [save_app,'_bck_ratio_',num2str(mixing_id(1)/10 -0.1,'%6.1f'),'-',num2str(mixing_id(end)/10 -0.1,'%6.1f')];
-        lgd = {'20%','40%','60%','80%','100%    '};
+        % lgd = {'20%','40%','60%','80%','100%    '};
+        lgd = {'80%','60%','40%','20%','0%    '};
         col_model = col(5,:);
         ct_fig = 5;
         num_var = numel(mixing_id);
@@ -62,7 +63,7 @@ function [da_out,bias_out] = DA_LME_function_bucket_model(ct_reg,t_id,shade_id,.
         save_app = [save_app,'_wind_',num2str(wind_id)];
     else
         save_app = [save_app,'_wind_',num2str(wind_id(1)),'-',num2str(wind_id(end))];
-        lgd = {'x0','x0.5','x0.1','x1.5','x2','x2.5','x3    '};
+        lgd = {'x0','x0.5','x1','x1.5','x2','x2.5','x3    '};
         col_model = col(6,:);
         ct_fig = 6;
         num_var = numel(wind_id);
@@ -94,7 +95,7 @@ function [da_out,bias_out] = DA_LME_function_bucket_model(ct_reg,t_id,shade_id,.
     P.s_environment   = 7;
     P.solar_shading   = 0.4;
     P.thickness       = 0.01; 
-    P.wind_experience = 0.6;
+    P.wind_experience = 1;
     P.diamter         = 0.25;   
     P.depth           = 0.2;
     alpha             = (1-1) * 0.05;
