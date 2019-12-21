@@ -41,6 +41,12 @@ function DA_LME_function_scatter_plot(yr_start,reg_sea)
     y_eri = data.lme(1,yr_start-yr0,reg_sea);
     x_buoy = nan;
     y_buoy = nan;
+    
+    l = ~isnan(x);
+    x = x(l);
+    y = y(l);
+    x_std = x_std(l);
+    y_std = y_std(l);
 
     % *********************************************************************
     % Generate plot

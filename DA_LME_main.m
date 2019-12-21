@@ -1,9 +1,9 @@
 clear;
 
 % *************************************************************************
-% Figure for offseet-diurnal relationship 
+% Figure for offseet-diurnal relationship
 % in response to varying distinct bucket model parameters.
-% 
+%
 % Reference bucket
 % t_id      = 11;     % 1. initial SST        +2 for every 1 minute
 % shade_id  = 4;      % 1. all insolation     11. no insolation
@@ -12,12 +12,12 @@ clear;
 % mixing_id = 11;     % 1. all eri            11. all bucket
 % wind_id   = 3;      % 1. less wind (x0)      7. more wind (x3)
 % thick_id  = 5;      % 1. thing bucket (2mm)  7. thick bucket (2cm)
-% 
+%
 %  DA_LME_function_bucket_model(ct_reg,t_id,shade_id,alpha_id,size_id,
 %                                      mixing_id,wind_id,thick_id,eri_bias)
 %
-% This is a faster version that uses regional and seasonal mean fields to 
-% drive the extended bucket models.  We have compaired the results with 
+% This is a faster version that uses regional and seasonal mean fields to
+% drive the extended bucket models.  We have compaired the results with
 % running model at 5^o monthly resolution first and than computing averages.
 % Errors are within 2% for the tropics and witin 10\% outside the tropics.
 % This yeilds a faster implementation yet does not qulitatively change the
@@ -83,18 +83,18 @@ end
 % Data for Figure 5: First compute statistics and then generate plot
 % *************************************************************************
 for ct_yr_start = 1880:1:1990
-    
+
     disp(['Year ',num2str(ct_yr_start)])
     for ct_reg_sea = 1:5
-        
+
         output = DA_LME_function_statistics(ct_yr_start,ct_reg_sea);
         ct_prd = ct_yr_start - 1879;
-        
+
         Tab_r(ct_prd,ct_reg_sea)                   = output.R;
         Tab_n(ct_prd,ct_reg_sea)                   = output.N;
         Tab_r2(ct_prd,ct_reg_sea)                  = output.R2;
         Tab_r2_quan(ct_prd,ct_reg_sea,:)           = output.R2_quan;
-        
+
         Tab_slp(ct_prd,ct_reg_sea)                 = output.slp;
         Tab_ipt(ct_prd,ct_reg_sea)                 = output.ipt;
         Tab_slp_quan(ct_prd,ct_reg_sea,:)          = output.slp_quan;
@@ -104,23 +104,21 @@ for ct_yr_start = 1880:1:1990
         Tab_da_quan_ex_ERI(ct_prd,ct_reg_sea,:)    = output.da_quan_ex_ERI;
         Tab_lme_quan(ct_prd,ct_reg_sea,:)          = output.lme_quan;
         Tab_lme_quan_ex_ERI(ct_prd,ct_reg_sea,:)   = output.lme_quan_ex_ERI;
-        
-        Tab_pctg(:,ct_prd,ct_reg_sea)              = output.pctg_mu;
-        Tab_pctg_std(:,ct_prd,ct_reg_sea)          = output.pctg_std;
+
     end
 end
 save('DA_LME_Statistics.mat','Tab_r','Tab_n','Tab_r2','Tab_r2_quan','Tab_slp','Tab_slp_quan',...
         'Tab_da_quan','Tab_da_quan_ex_ERI','Tab_lme_quan','Tab_lme_quan_ex_ERI',...
-        'Tab_pctg','Tab_pctg_std','Tab_is_eri_in','Tab_ipt','-v7.3')
-    
+        'Tab_is_eri_in','Tab_ipt','-v7.3')
+
 %% *************************************************************************
 % Figure 5: First compute statistics and then generate plot
 % *************************************************************************
-load('DA_LME_Statistics.mat');        
+load('DA_LME_Statistics.mat');
 
- close all;
+% close all;
 for ct_fig = [1 2 3 4]
-    % 1. R^2    2. Slopes   3. Diurnal amplitude range  4.  LME offset range
+    % 1. R^2   2. Diurnal amplitude range   3. LME offset range   4. Slopes
 
     sea_list = [1 2 3 4 5];
     % 1. Tropical annual mean
@@ -148,14 +146,14 @@ for ct_fig = [1 2 3 4]
             pic_std = Tab_lme_quan_ex_ERI(:,:,[2 3 5 6]) * nan;
             y_label = 'LME offset range (^oC)';
             offset  = -1;
-            aa = [0.3 .7]; 
+            aa = [0.3 .7];
             st = '-';
         case 4,
             pic     = Tab_slp;
             pic_std = Tab_slp_quan;
             y_label = 'Slope (^oC / ^oC)';
             offset  = -20;
-            aa = [-5 0 5];  
+            aa = [-5 0 5];
             st = '-';
     end
 
@@ -203,7 +201,7 @@ for ct_fig = [1 2 3 4]
     set(gcf,'position',[.1 1 15 8],'unit','inches')
 
     file_save = ['/Volumes/Untitled/01_Research/03_DATA/LME_intercomparison/Fig_sliding_end_point_R2_',num2str(ct_fig),'.png'];
-    % CDF_save(ct_fig,'png',300,file_save);
+    CDF_save(ct_fig,'png',300,file_save);
 end
 
 %% *************************************************************************
@@ -212,7 +210,7 @@ end
 close all;
 
 load('All_lme_offsets_and_diurnal_amplitudes.mat');
-load('DA_LME_Statistics.mat','Tab_slp','Tab_ipt');   
+load('DA_LME_Statistics.mat','Tab_slp','Tab_ipt');
 
 clear('y_hat')
 for ct_reg = 1

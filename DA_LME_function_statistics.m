@@ -13,6 +13,11 @@ function output = DA_LME_function_statistics(yr_start,reg_sea)
     x_eri_std = data.da_std(1,yr_start-yr0,reg_sea);
     y_eri_std = data.lme_std(1,yr_start-yr0,reg_sea);
 
+    l = ~isnan(x);
+    x = x(l);
+    y = y(l);
+    x_std = x_std(l);
+    y_std = y_std(l);
 
     % *********************************************************************
     % Panel a. correlation and r^2
