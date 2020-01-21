@@ -180,7 +180,7 @@ function LME_pair_02_Screen_Pairs(P)
             end
             l_rm = all(grp1 == grp2,2) | l_rm';
         elseif strcmp(P.type,'ERIex_vs_ERIex'),
-            l_rm = all(grp1 == grp2,2) | l_rm';
+            l_rm = all(grp1 == grp2,2);
         elseif strcmp(P.type,'ERIex_vs_Bucket'),
             grp1 = [P1.DCK P1.C0_SI_4'];
             grp2 = [P2.DCK P2.C0_SI_4'];
@@ -192,7 +192,7 @@ function LME_pair_02_Screen_Pairs(P)
                     grp2(l2,:) = 0;
                 end
             end
-            l_rm = all(grp1 == grp2,2) | l_rm';
+            l_rm = all(grp1 == grp2,2);
         end
 
         if isfield(P,'use_C0_SI_2'),
