@@ -316,6 +316,17 @@ function [BINNED,W_X] = LME_lme_bin(P)
         end
     end
 
+    if strcmp(P.type,'ERI_vs_Bucket'),
+        if isfield(P,'all_BCK_in_one_group'),
+            if P.all_BCK_in_one_group == 1;
+                l1 = kind_cmp_1(:,end) == 0;
+                l2 = kind_cmp_2(:,end) == 0;
+                kind_cmp_1(l1,:) = 0;
+                kind_cmp_2(l2,:) = 0;
+            end
+        end
+    end
+
     var_list_2 = [var_list_2,'kind_cmp_1','kind_cmp_2'];
 
     % *********************************************************************
