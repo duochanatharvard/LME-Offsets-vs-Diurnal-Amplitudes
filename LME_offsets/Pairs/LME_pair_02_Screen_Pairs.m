@@ -56,6 +56,22 @@ function LME_pair_02_Screen_Pairs(P)
             load(file_load,'ERI_vs_ERI');
             DATA = [ERI_vs_ERI];
             clear('ERI_vs_ERI');
+        elseif strcmp(P.type,'ERI_vs_Bucket')
+            if isfield(P,'all_BCK_in_one_group'),
+                if P.all_BCK_in_one_group == 1;
+                    load(file_load,'ERI_vs_ERI','Bucket_vs_ERI');
+                    DATA = [ERI_vs_ERI  Bucket_vs_ERI];
+                    clear('ERI_vs_ERI','Bucket_vs_ERI');
+                else
+                    load(file_load,'Bucket_vs_Bucket','Bucket_vs_ERI','ERI_vs_ERI');
+                    DATA = [Bucket_vs_Bucket  Bucket_vs_ERI   ERI_vs_ERI];
+                    clear('Bucket_vs_Bucket','Bucket_vs_ERI','ERI_vs_ERI');
+                end
+            else
+                load(file_load,'Bucket_vs_Bucket','Bucket_vs_ERI','ERI_vs_ERI');
+                DATA = [Bucket_vs_Bucket  Bucket_vs_ERI   ERI_vs_ERI];
+                clear('Bucket_vs_Bucket','Bucket_vs_ERI','ERI_vs_ERI');
+            end
         end
 
         % *****************************************************************
@@ -149,6 +165,19 @@ function LME_pair_02_Screen_Pairs(P)
             l_rm = all(grp1 == grp2,2) | l_rm';
         elseif strcmp(P.type,'ERI_vs_ERI'),
             l_rm = (P1.C0_SI_4 == 3 | P2.C0_SI_4 == 3);
+            l_rm = all(grp1 == grp2,2) | l_rm';
+        elseif strcmp(P.type,'ERI_vs_Bucket'),
+            l_rm = (P1.C0_SI_4 == 3 | P2.C0_SI_4 == 3);
+            grp1 = [P1.DCK P1.C0_SI_4'];
+            grp2 = [P2.DCK P2.C0_SI_4'];
+            if isfield(P,'all_BCK_in_one_group'),
+                if P.all_BCK_in_one_group == 1;
+                    l1 = grp1(:,end) == 0;
+                    l2 = grp2(:,end) == 0;
+                    grp1(l1,:) = 0;
+                    grp2(l2,:) = 0;
+                end
+            end
             l_rm = all(grp1 == grp2,2) | l_rm';
         end
 
