@@ -31,7 +31,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
                 var_list = [var_list, 'Fundemental_SST'];
         end
     end
-        
+
     % *********************************************************************
     % Input and Output
     % *********************************************************************
@@ -61,18 +61,18 @@ function [BINNED,W_X] = LME_lme_bin(P)
         disp('Load in data ...')
         for yr = P.yr_list
             for mon = P.mon_list
-                
+
                 disp(['Starting year: ',num2str(yr),'  month:', num2str(mon)])
                 file_load = [dir_load,'IMMA1_R3.0.0_',num2str(yr),'-',...
                     CDF_num2str(mon,2),'_',P.save_app,'.mat'];
                 load(file_load,'DATA_save');
                 DATA = [DATA DATA_save];
-                
+
                 PP = P;   PP.yr = yr;  PP.mon = mon;  PP.C98_UID = DATA_save(1,:);
                 P1_temp = LME_pair_function_read_data(PP);    clear('PP')
                 PP = P;   PP.yr = yr;  PP.mon = mon;  PP.C98_UID = DATA_save(2,:);
                 P2_temp = LME_pair_function_read_data(PP);    clear('PP')
-                
+
                 for var = 1:numel(var_list)
                     if ~ismember(var_list{var},{'C0_ID','C0_CTY_CRT','DCK'}),
                         eval(['P1.',var_list{var},' = [P1.',var_list{var},'  P1_temp.',var_list{var},'];']);
@@ -126,8 +126,8 @@ function [BINNED,W_X] = LME_lme_bin(P)
     clear('l_rp','l_sm','l_rm')
     grp1 = [P1.DCK P1.C0_SI_4'];
     grp2 = [P2.DCK P2.C0_SI_4'];
-    
-    if strcmp(P.type,'Bucket_vs_ERI'),        
+
+    if strcmp(P.type,'Bucket_vs_ERI'),
         if isfield(P,'all_ERI_in_one_group'),
             if P.all_ERI_in_one_group == 1;
                 l1 = grp1(:,end) == 1;
@@ -139,7 +139,19 @@ function [BINNED,W_X] = LME_lme_bin(P)
     end
     l_rp = all(grp1 == grp2,2);
 
-    
+    if strcmp(P.type,'ERI_vs_Bucket'),
+        if isfield(P,'all_BCK_in_one_group'),
+            if P.all_BCK_in_one_group == 1;
+                l1 = grp1(:,end) == 0;
+                l2 = grp2(:,end) == 0;
+                grp1(l1,:) = 0;
+                grp2(l2,:) = 0;
+            end
+        end
+    end
+    l_rp = all(grp1 == grp2,2);
+
+
     [~,~,L] = unique([grp1; grp2],'rows');
     l_sm = ismember(L,find(hist(L,1:1:max(L)) <= P.key));
     l_sm = any([l_sm(1:numel(l_sm)/2)  l_sm(numel(l_sm)/2+1:end)],2);
@@ -293,7 +305,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
     kind_cmp_1 = [P1.DCK P1.C0_SI_4'];
     kind_cmp_2 = [P2.DCK P2.C0_SI_4'];
 
-    if strcmp(P.type,'Bucket_vs_ERI'),        
+    if strcmp(P.type,'Bucket_vs_ERI'),
         if isfield(P,'all_ERI_in_one_group'),
             if P.all_ERI_in_one_group == 1;
                 l1 = kind_cmp_1(:,end) == 1;
