@@ -139,7 +139,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
     end
     l_rp = all(grp1 == grp2,2);
 
-    if strcmp(P.type,'ERI_vs_Bucket'),
+    if strcmp(P.type,'ERI_vs_Bucket') || strcmp(P.type,'ERIex_vs_Bucket'),
         if isfield(P,'all_BCK_in_one_group'),
             if P.all_BCK_in_one_group == 1;
                 l1 = grp1(:,end) == 0;
@@ -316,7 +316,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
         end
     end
 
-    if strcmp(P.type,'ERI_vs_Bucket'),
+    if strcmp(P.type,'ERI_vs_Bucket') || strcmp(P.type,'ERIex_vs_Bucket'),
         if isfield(P,'all_BCK_in_one_group'),
             if P.all_BCK_in_one_group == 1;
                 l1 = kind_cmp_1(:,end) == 0;
