@@ -25,7 +25,7 @@ function LME_pair_02_Screen_Pairs(P)
                            CDF_num2str(P.mon,2),'_All_pairs.mat'];
 
     fid = fopen(file_load);
-    if fid > 0,
+    if fid > 0
 
         fclose(fid);
         clear('DATA','DATA_save')
@@ -37,8 +37,8 @@ function LME_pair_02_Screen_Pairs(P)
             DATA = Bucket_vs_Bucket;
             clear('Bucket_vs_Bucket')
         elseif strcmp(P.type,'Bucket_vs_ERI')
-            if isfield(P,'all_ERI_in_one_group'),
-                if P.all_ERI_in_one_group == 1;
+            if isfield(P,'all_ERI_in_one_group')
+                if P.all_ERI_in_one_group == 1
                     load(file_load,'Bucket_vs_Bucket','Bucket_vs_ERI');
                     DATA = [Bucket_vs_Bucket  Bucket_vs_ERI];
                     clear('Bucket_vs_Bucket','Bucket_vs_ERI');
@@ -52,13 +52,13 @@ function LME_pair_02_Screen_Pairs(P)
                 DATA = [Bucket_vs_Bucket  Bucket_vs_ERI   ERI_vs_ERI];
                 clear('Bucket_vs_Bucket','Bucket_vs_ERI','ERI_vs_ERI');
             end
-        elseif strcmp(P.type,'ERI_vs_ERI') || strcmp(P.type,'ERIex_vs_ERIex'),
+        elseif strcmp(P.type,'ERI_vs_ERI') || strcmp(P.type,'ERIex_vs_ERIex')
             load(file_load,'ERI_vs_ERI');
             DATA = [ERI_vs_ERI];
             clear('ERI_vs_ERI');
-        elseif strcmp(P.type,'ERI_vs_Bucket') || strcmp(P.type,'ERIex_vs_Bucket'),
-            if isfield(P,'all_BCK_in_one_group'),
-                if P.all_BCK_in_one_group == 1;
+        elseif strcmp(P.type,'ERI_vs_Bucket') || strcmp(P.type,'ERIex_vs_Bucket')
+            if isfield(P,'all_BCK_in_one_group')
+                if P.all_BCK_in_one_group == 1
                     load(file_load,'ERI_vs_ERI','Bucket_vs_ERI');
                     DATA = [ERI_vs_ERI  Bucket_vs_ERI];
                     clear('ERI_vs_ERI','Bucket_vs_ERI');
@@ -72,13 +72,17 @@ function LME_pair_02_Screen_Pairs(P)
                 DATA = [Bucket_vs_Bucket  Bucket_vs_ERI   ERI_vs_ERI];
                 clear('Bucket_vs_Bucket','Bucket_vs_ERI','ERI_vs_ERI');
             end
+        elseif strcmp(P.type,'Ship_vs_Ship')
+            load(file_load,'Bucket_vs_Bucket','Bucket_vs_ERI','ERI_vs_ERI','Ship_vs_Ship');
+            DATA = [Bucket_vs_Bucket  Bucket_vs_ERI   ERI_vs_ERI  Ship_vs_Ship];
+            clear('Bucket_vs_Bucket','Bucket_vs_ERI','ERI_vs_ERI','Ship_vs_Ship');
         end
 
         % *****************************************************************
         % Choose if to use data that only belong to tracked kent data
         % *****************************************************************
-        if isfield(P,'use_kent_tracks'),
-            if P.use_kent_tracks == 1,
+        if isfield(P,'use_kent_tracks')
+            if P.use_kent_tracks == 1
                 dir_kent = LME_OI('kent_track');
                 file_kent = [dir_kent,'IMMA1_R3.0.0_',num2str(P.yr),'-',...
                                        CDF_num2str(P.mon,2),'_Tracks_Kent.mat'];
@@ -92,14 +96,14 @@ function LME_pair_02_Screen_Pairs(P)
         end
 
         % Or to exclude data to only have points with computed diurnal cycles
-        if isfield(P,'use_diurnal_points'),
-            if P.use_diurnal_points == 1,
+        if isfield(P,'use_diurnal_points')
+            if P.use_diurnal_points == 1
                 dir_diurnal  = LME_OI('ship_diurnal');
                 file_diurnal = [dir_diurnal,'IMMA1_R3.0.0_',num2str(P.yr),'-',...
                                        CDF_num2str(P.mon,2),'_Ship_Diurnal_Signal',...
                                        '_relative_to_',P.relative,'.mat'];
                 load(file_diurnal,'Day_indicator','C98_UID');
-                if P.diurnal_QC == 1,
+                if P.diurnal_QC == 1
                     l_rm = ~ismember(Day_indicator,[0 1]);
                     C98_UID(l_rm) = [];
                 end
@@ -148,14 +152,12 @@ function LME_pair_02_Screen_Pairs(P)
         clear('l_rm')
         grp1 = [P1.DCK P1.C0_SI_4'];
         grp2 = [P2.DCK P2.C0_SI_4'];
-        if strcmp(P.type,'Bucket_vs_Bucket'),
+        if strcmp(P.type,'Bucket_vs_Bucket')
             l_rm = all(grp1 == grp2,2);
-        elseif strcmp(P.type,'Bucket_vs_ERI'),
+        elseif strcmp(P.type,'Bucket_vs_ERI')
             l_rm = (P1.C0_SI_4 == 3 | P2.C0_SI_4 == 3);
-            grp1 = [P1.DCK P1.C0_SI_4'];
-            grp2 = [P2.DCK P2.C0_SI_4'];
-            if isfield(P,'all_ERI_in_one_group'),
-                if P.all_ERI_in_one_group == 1;
+            if isfield(P,'all_ERI_in_one_group')
+                if P.all_ERI_in_one_group == 1
                     l1 = grp1(:,end) == 1;
                     l2 = grp2(:,end) == 1;
                     grp1(l1,:) = 1;
@@ -163,15 +165,13 @@ function LME_pair_02_Screen_Pairs(P)
                 end
             end
             l_rm = all(grp1 == grp2,2) | l_rm';
-        elseif strcmp(P.type,'ERI_vs_ERI'),
+        elseif strcmp(P.type,'ERI_vs_ERI')
             l_rm = (P1.C0_SI_4 == 3 | P2.C0_SI_4 == 3);
             l_rm = all(grp1 == grp2,2) | l_rm';
-        elseif strcmp(P.type,'ERI_vs_Bucket'),
+        elseif strcmp(P.type,'ERI_vs_Bucket')
             l_rm = (P1.C0_SI_4 == 3 | P2.C0_SI_4 == 3);
-            grp1 = [P1.DCK P1.C0_SI_4'];
-            grp2 = [P2.DCK P2.C0_SI_4'];
-            if isfield(P,'all_BCK_in_one_group'),
-                if P.all_BCK_in_one_group == 1;
+            if isfield(P,'all_BCK_in_one_group')
+                if P.all_BCK_in_one_group == 1
                     l1 = grp1(:,end) == 0;
                     l2 = grp2(:,end) == 0;
                     grp1(l1,:) = 0;
@@ -179,33 +179,33 @@ function LME_pair_02_Screen_Pairs(P)
                 end
             end
             l_rm = all(grp1 == grp2,2) | l_rm';
-        elseif strcmp(P.type,'ERIex_vs_ERIex'),
+        elseif strcmp(P.type,'ERIex_vs_ERIex')
             l_rm = all(grp1 == grp2,2);
-        elseif strcmp(P.type,'ERIex_vs_Bucket'),
-            grp1 = [P1.DCK P1.C0_SI_4'];
-            grp2 = [P2.DCK P2.C0_SI_4'];
-            if isfield(P,'all_BCK_in_one_group'),
-                if P.all_BCK_in_one_group == 1;
+        elseif strcmp(P.type,'ERIex_vs_Bucket')
+            if isfield(P,'all_BCK_in_one_group')
+                if P.all_BCK_in_one_group == 1
                     l1 = grp1(:,end) == 0;
                     l2 = grp2(:,end) == 0;
                     grp1(l1,:) = 0;
                     grp2(l2,:) = 0;
                 end
             end
+            l_rm = all(grp1 == grp2,2);
+        elseif strcmp(P.type,'Ship_vs_Ship')
             l_rm = all(grp1 == grp2,2);
         end
 
-        if isfield(P,'use_C0_SI_2'),
-            if P.use_C0_SI_2 == 1,
+        if isfield(P,'use_C0_SI_2')
+            if P.use_C0_SI_2 == 1
                 l_si2_1 = ~ismember(P1.C0_SI_2,[0 1 -2 3]);
                 l_si2_2 = ~ismember(P2.C0_SI_2,[0 1 -2 3]);
             end
             l_rm = l_rm | l_si2_1' | l_si2_2';
         end
 
-        if isfield(P,'do_nighttime_LME'),
+        if isfield(P,'do_nighttime_LME')
             % C1_ND == 1 night;   == 2 day
-            if P.do_nighttime_LME == 1,
+            if P.do_nighttime_LME == 1
                 l_day_1 = P1.C1_ND == 2;
                 l_day_2 = P2.C1_ND == 2;
             end
@@ -255,7 +255,7 @@ function LME_pair_02_Screen_Pairs(P)
             logic_1 = logic_point(J_uid_pairs(ct,1));
             logic_2 = logic_point(J_uid_pairs(ct,2));
 
-            if logic_1 == 0 && logic_2 == 0,
+            if logic_1 == 0 && logic_2 == 0
                 logic_point(1,J_uid_pairs(ct,:)) = 1;
                 logic_use_pairs(ct) = 1;
             end
