@@ -65,22 +65,27 @@ function [BINNED,W_X] = LME_lme_bin(P)
                 disp(['Starting year: ',num2str(yr),'  month:', num2str(mon)])
                 file_load = [dir_load,'IMMA1_R3.0.0_',num2str(yr),'-',...
                     CDF_num2str(mon,2),'_',P.save_app,'.mat'];
-                load(file_load,'DATA_save');
-                DATA = [DATA DATA_save];
+                
+                try 
+                    load(file_load,'DATA_save');
+                    DATA = [DATA DATA_save];
 
-                PP = P;   PP.yr = yr;  PP.mon = mon;  PP.C98_UID = DATA_save(1,:);
-                P1_temp = LME_pair_function_read_data(PP);    clear('PP')
-                PP = P;   PP.yr = yr;  PP.mon = mon;  PP.C98_UID = DATA_save(2,:);
-                P2_temp = LME_pair_function_read_data(PP);    clear('PP')
+                    PP = P;   PP.yr = yr;  PP.mon = mon;  PP.C98_UID = DATA_save(1,:);
+                    P1_temp = LME_pair_function_read_data(PP);    clear('PP')
+                    PP = P;   PP.yr = yr;  PP.mon = mon;  PP.C98_UID = DATA_save(2,:);
+                    P2_temp = LME_pair_function_read_data(PP);    clear('PP')
 
-                for var = 1:numel(var_list)
-                    if ~ismember(var_list{var},{'C0_ID','C0_CTY_CRT','DCK'})
-                        eval(['P1.',var_list{var},' = [P1.',var_list{var},'  P1_temp.',var_list{var},'];']);
-                        eval(['P2.',var_list{var},' = [P2.',var_list{var},'  P2_temp.',var_list{var},'];']);
-                    else
-                        eval(['P1.',var_list{var},' = [P1.',var_list{var},'; P1_temp.',var_list{var},'];']);
-                        eval(['P2.',var_list{var},' = [P2.',var_list{var},'; P2_temp.',var_list{var},'];']);
+                    for var = 1:numel(var_list)
+                        if ~ismember(var_list{var},{'C0_ID','C0_CTY_CRT','DCK'})
+                            eval(['P1.',var_list{var},' = [P1.',var_list{var},'  P1_temp.',var_list{var},'];']);
+                            eval(['P2.',var_list{var},' = [P2.',var_list{var},'  P2_temp.',var_list{var},'];']);
+                        else
+                            eval(['P1.',var_list{var},' = [P1.',var_list{var},'; P1_temp.',var_list{var},'];']);
+                            eval(['P2.',var_list{var},' = [P2.',var_list{var},'; P2_temp.',var_list{var},'];']);
+                        end
                     end
+                catch
+                    disp(['something wrong with data in ',num2str(yr),' Month ',num2str(mon)])
                 end
             end
         end
