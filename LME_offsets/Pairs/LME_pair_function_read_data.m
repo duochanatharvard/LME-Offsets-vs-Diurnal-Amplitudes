@@ -54,8 +54,8 @@ function output = LME_pair_function_read_data(P)
         % *****************************************************************
         % Process nation and deck if required
         % *****************************************************************
-        if isfield(P,'do_connect'),
-            if P.do_connect == 1,
+        if isfield(P,'do_connect')
+            if P.do_connect == 1
                DCK = LME_function_preprocess_deck(double([C0_CTY_CRT C1_DCK']),P);
                var_list{end+1} = 'DCK';
             end
@@ -64,11 +64,11 @@ function output = LME_pair_function_read_data(P)
         % *****************************************************************
         % Read Diurnal Cycles
         % *****************************************************************
-        if isfield(P,'buoy_diurnal'),
-            if P.buoy_diurnal == 1,
+        if isfield(P,'buoy_diurnal')
+            if P.buoy_diurnal == 1
                 dir_da = LME_OI('Mis');
                 
-                if isfield(P,'reproduce_nature'),
+                if isfield(P,'reproduce_nature')
                     disp(' ')
                     disp('Using 2017 version of diurnal signals')
                     disp(' ')
@@ -99,11 +99,11 @@ function output = LME_pair_function_read_data(P)
         % *****************************************************************
         % Subset data by UID if exist
         % *****************************************************************
-        if isfield(P,'C98_UID'),
+        if isfield(P,'C98_UID')
             [~,pst] = ismember(P.C98_UID,C98_UID);
 
             for var = 1:numel(var_list)
-                if ~ismember(var_list{var},{'C0_ID','C0_CTY_CRT','DCK'}),
+                if ~ismember(var_list{var},{'C0_ID','C0_CTY_CRT','DCK'})
                     eval([var_list{var},' = ',var_list{var},'(pst);']);
                 else
                     eval([var_list{var},' = ',var_list{var},'(pst,:);']);
@@ -114,14 +114,14 @@ function output = LME_pair_function_read_data(P)
         % *****************************************************************
         % Load in fundemental SSTs
         % *****************************************************************
-        if isfield(P,'use_fundemental_SST'),
-            if P.use_fundemental_SST == 1,
+        if isfield(P,'use_fundemental_SST')
+            if P.use_fundemental_SST == 1
                 dir_diurnal  = LME_OI('ship_diurnal');
                 file_diurnal = [dir_diurnal,'IMMA1_R3.0.0_',num2str(P.yr),'-',...
                                        CDF_num2str(P.mon,2),'_Ship_Diurnal_Signal',...
                                        '_relative_to_',P.relative,'.mat'];
                 FD_SST = load(file_diurnal,'Day_indicator','C98_UID','Fundemental_SST');
-                if P.diurnal_QC == 1,
+                if P.diurnal_QC == 1
                     l_rm = ~ismember(FD_SST.Day_indicator,[0 1]);
                     FD_SST.C98_UID(l_rm)         = [];
                     FD_SST.Fundemental_SST(l_rm) = [];
@@ -130,9 +130,9 @@ function output = LME_pair_function_read_data(P)
                 FD_SST.first_day = ismember(FD_SST.Day_indicator,[1 3]);
                 Fundemental_SST  = nan(1,numel(C98_UID));
                 for ct = 1:numel(Fundemental_SST)
-                    if ismember(C98_UID(ct), FD_SST.C98_UID),
+                    if ismember(C98_UID(ct), FD_SST.C98_UID)
                         l = C98_UID(ct) == FD_SST.C98_UID & FD_SST.first_day;
-                        if nnz(l) > 0,
+                        if nnz(l) > 0
                             Fundemental_SST(ct) = nanmean(FD_SST.Fundemental_SST(l));
                         else
                             l = C98_UID(ct) == FD_SST.C98_UID & FD_SST.first_day == 0;
@@ -160,66 +160,66 @@ end
 
 function var_list = get_var_list(P)
 
-    if ~isfield(P,'var_list'),
+    if ~isfield(P,'var_list')
         var_list = {'C0_YR','C0_MO','C0_DY','C0_HR','C0_LCL','C0_UTC','C98_UID','C0_LON','C0_LAT',...
                     'C1_DCK','C1_SID','C0_II','C1_PT','C0_SST','C0_OI_CLIM','C0_SI_1','C1_ND'...
                     'C0_SI_2','C0_SI_3','C0_SI_4','QC_FINAL','C0_CTY_CRT','C1_DUPS','C0_IT'};
     else
         var_list = P.var_list;
         
-        if all(~ismember(var_list,'QC_FINAL')),
+        if all(~ismember(var_list,'QC_FINAL'))
             var_list{end+1} = 'QC_FINAL';
         end
         
-        if all(~ismember(var_list,'C0_SI_4')),
+        if all(~ismember(var_list,'C0_SI_4'))
             var_list{end+1} = 'C0_SI_4';
         end
         
-        if isfield(P,'use_C0_SI_2'),
-            if P.use_C0_SI_2 == 1,
-                if all(~ismember(var_list,'C0_SI_2')),
+        if isfield(P,'use_C0_SI_2')
+            if P.use_C0_SI_2 == 1
+                if all(~ismember(var_list,'C0_SI_2'))
                     var_list{end+1} = 'C0_SI_2';
                 end
             end
         end
         
-        if isfield(P,'do_connect'),
-            if all(~ismember(var_list,'C0_CTY_CRT')),
+        if isfield(P,'do_connect')
+            if all(~ismember(var_list,'C0_CTY_CRT'))
                 var_list{end+1} = 'C0_CTY_CRT';
             end
             
-            if all(~ismember(var_list,'C1_DCK')),
+            if all(~ismember(var_list,'C1_DCK'))
                 var_list{end+1} = 'C1_DCK';
             end
         end
             
-        if isfield(P,'buoy_diurnal'),
-            if all(~ismember(var_list,'C0_LCL')),
+        if isfield(P,'buoy_diurnal')
+            if all(~ismember(var_list,'C0_LCL'))
                 var_list{end+1} = 'C0_LCL';
             end
 
-            if all(~ismember(var_list,'C0_LON')),
+            if all(~ismember(var_list,'C0_LON'))
                 var_list{end+1} = 'C0_LON';
             end
 
-            if all(~ismember(var_list,'C0_LAT')),
+            if all(~ismember(var_list,'C0_LAT'))
                 var_list{end+1} = 'C0_LAT';
             end
             
-            if all(~ismember(var_list,'C0_MO')),
+            if all(~ismember(var_list,'C0_MO'))
                 var_list{end+1} = 'C0_MO';
             end
         end 
         
-        if isfield(P,'C98_UID'),
-            if all(~ismember(var_list,'C98_UID')),
+        if isfield(P,'C98_UID')
+            if all(~ismember(var_list,'C98_UID'))
                 var_list{end+1} = 'C98_UID';
             end
         end
 
-        if isfield(P,'do_nighttime_LME'),
-            if P.do_nighttime_LME == 1,
-                if all(~ismember(var_list,'C1_ND')),
+        if isfield(P,'do_nighttime_LME')
+            if P.do_nighttime_LME == 1
+                if all(~ismember(var_list,'C1_ND'))
                     var_list{end+1} = 'C1_ND';
                 end
             end

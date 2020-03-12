@@ -3,7 +3,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
     % *********************************************************************
     % Debug
     % *********************************************************************
-    if 0,
+    if 0
         P.yr_list = 1995:1995;
         P.mon_list  = 1:2;
         P.type = 'Bucket_vs_Bucket';
@@ -26,8 +26,8 @@ function [BINNED,W_X] = LME_lme_bin(P)
     end
 
     var_list = [P.var_list, 'DCK', 'Buoy_Diurnal'];
-    if isfield(P,'use_fundemental_SST'),
-        if P.use_fundemental_SST == 1,
+    if isfield(P,'use_fundemental_SST')
+        if P.use_fundemental_SST == 1
                 var_list = [var_list, 'Fundemental_SST'];
         end
     end
@@ -38,9 +38,9 @@ function [BINNED,W_X] = LME_lme_bin(P)
     dir_save = LME_OI('bin_pairs');
     file_save = [dir_save,'SUM_pairs_',P.save_sum,'.mat'];
 
-    if isfield(P,'restart'),
-        if P.restart == 1,
-            try,
+    if isfield(P,'restart')
+        if P.restart == 1
+            try
                 delete(file_save);
             catch
                 disp([file_save,' does not exist, so not removed!'])
@@ -50,7 +50,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
 
     fid = fopen(file_save);
 
-    if fid <= 0,
+    if fid <= 0
         dir_load = LME_OI('screen_pairs');
         DATA = [];
         for var = 1:numel(var_list)
@@ -74,7 +74,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
                 P2_temp = LME_pair_function_read_data(PP);    clear('PP')
 
                 for var = 1:numel(var_list)
-                    if ~ismember(var_list{var},{'C0_ID','C0_CTY_CRT','DCK'}),
+                    if ~ismember(var_list{var},{'C0_ID','C0_CTY_CRT','DCK'})
                         eval(['P1.',var_list{var},' = [P1.',var_list{var},'  P1_temp.',var_list{var},'];']);
                         eval(['P2.',var_list{var},' = [P2.',var_list{var},'  P2_temp.',var_list{var},'];']);
                     else
@@ -127,9 +127,9 @@ function [BINNED,W_X] = LME_lme_bin(P)
     grp1 = [P1.DCK P1.C0_SI_4'];
     grp2 = [P2.DCK P2.C0_SI_4'];
 
-    if strcmp(P.type,'Bucket_vs_ERI'),
-        if isfield(P,'all_ERI_in_one_group'),
-            if P.all_ERI_in_one_group == 1;
+    if strcmp(P.type,'Bucket_vs_ERI')
+        if isfield(P,'all_ERI_in_one_group')
+            if P.all_ERI_in_one_group == 1
                 l1 = grp1(:,end) == 1;
                 l2 = grp2(:,end) == 1;
                 grp1(l1,:) = 1;
@@ -139,9 +139,9 @@ function [BINNED,W_X] = LME_lme_bin(P)
     end
     l_rp = all(grp1 == grp2,2);
 
-    if strcmp(P.type,'ERI_vs_Bucket') || strcmp(P.type,'ERIex_vs_Bucket'),
-        if isfield(P,'all_BCK_in_one_group'),
-            if P.all_BCK_in_one_group == 1;
+    if strcmp(P.type,'ERI_vs_Bucket') || strcmp(P.type,'ERIex_vs_Bucket')
+        if isfield(P,'all_BCK_in_one_group')
+            if P.all_BCK_in_one_group == 1
                 l1 = grp1(:,end) == 0;
                 l2 = grp2(:,end) == 0;
                 grp1(l1,:) = 0;
@@ -160,8 +160,8 @@ function [BINNED,W_X] = LME_lme_bin(P)
     l_rm = l_rp | l_sm;
 
     % Remove points that does not belong to a certain region --------------
-    if isfield(P,'select_region'),
-        if any(P.select_region) ~= 0,
+    if isfield(P,'select_region')
+        if any(P.select_region) ~= 0
             mx = LME_function_mean_period([P1.C0_LON; P2.C0_LON],360);
             my = nanmean([P1.C0_LAT; P2.C0_LAT],1);
             Id_region = LME_lme_effect_regional(mx,my,5);
@@ -170,8 +170,8 @@ function [BINNED,W_X] = LME_lme_bin(P)
     end
 
     % Remove points that does not belong to a certain season --------------
-    if isfield(P,'select_season'),
-        if any(P.select_season) ~= 0,
+    if isfield(P,'select_season')
+        if any(P.select_season) ~= 0
             my = nanmean([P1.C0_LAT; P2.C0_LAT],1);
             Id_season = LME_lme_effect_seasonal(my,P1.C0_MO);
             Id_season = rem(Id_season - 0.5,4)+0.5;
@@ -180,7 +180,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
     end
 
     for var = 1:numel(var_list)
-        if ~ismember(var_list{var},{'C0_ID','C0_CTY_CRT','DCK'}),
+        if ~ismember(var_list{var},{'C0_ID','C0_CTY_CRT','DCK'})
             eval(['P1.',var_list{var},' = P1.',var_list{var},'(~l_rm);']);
             eval(['P2.',var_list{var},' = P2.',var_list{var},'(~l_rm);']);
         else
@@ -199,7 +199,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
     disp('==============================================================>')
     disp('Assign error structure ...')
     clear('l_rp','l_sm','l_rm')
-    if P.do_simple == 0,
+    if P.do_simple == 0
         % *****************************************************************
         % Compute the climatic variance of SST
         % *****************************************************************
@@ -246,7 +246,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
     % ---------------------------------------------------------------------
     mx = LME_function_mean_period([P1.C0_LON; P2.C0_LON],360);
     my = nanmean([P1.C0_LAT; P2.C0_LAT],1);
-    if P.do_region == 1,
+    if P.do_region == 1
         group_region = LME_lme_effect_regional(mx,my,5);
     else
         group_region = zeros(1,N_pairs);
@@ -259,7 +259,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
     clear('l_rm')
     l_rm = isnan(group_region) | isnan(var_clim);
     for var = 1:numel(var_list)
-        if ~ismember(var_list{var},{'C0_ID','C0_CTY_CRT','DCK'}),
+        if ~ismember(var_list{var},{'C0_ID','C0_CTY_CRT','DCK'})
             eval(['P1.',var_list{var},' = P1.',var_list{var},'(~l_rm);']);
             eval(['P2.',var_list{var},' = P2.',var_list{var},'(~l_rm);']);
         else
@@ -276,7 +276,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
     % ---------------------------------------------------------------------
     % Assign seasonal effect
     % ---------------------------------------------------------------------
-    if P.do_season == 1,
+    if P.do_season == 1
         group_season = LME_lme_effect_seasonal(my,P1.C0_MO);
     else
         group_season = zeros(1,N_pairs);
@@ -286,7 +286,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
     % ---------------------------------------------------------------------
     % Assign decadal effect
     % ---------------------------------------------------------------------
-    if P.do_decade == 1,
+    if P.do_decade == 1
         group_decade = LME_lme_effect_decadal(P1.C0_YR,P);
     else
         group_decade = zeros(1,N_pairs);
@@ -305,9 +305,9 @@ function [BINNED,W_X] = LME_lme_bin(P)
     kind_cmp_1 = [P1.DCK P1.C0_SI_4'];
     kind_cmp_2 = [P2.DCK P2.C0_SI_4'];
 
-    if strcmp(P.type,'Bucket_vs_ERI'),
-        if isfield(P,'all_ERI_in_one_group'),
-            if P.all_ERI_in_one_group == 1;
+    if strcmp(P.type,'Bucket_vs_ERI')
+        if isfield(P,'all_ERI_in_one_group')
+            if P.all_ERI_in_one_group == 1
                 l1 = kind_cmp_1(:,end) == 1;
                 l2 = kind_cmp_2(:,end) == 1;
                 kind_cmp_1(l1,:) = 1;
@@ -316,9 +316,9 @@ function [BINNED,W_X] = LME_lme_bin(P)
         end
     end
 
-    if strcmp(P.type,'ERI_vs_Bucket') || strcmp(P.type,'ERIex_vs_Bucket'),
-        if isfield(P,'all_BCK_in_one_group'),
-            if P.all_BCK_in_one_group == 1;
+    if strcmp(P.type,'ERI_vs_Bucket') || strcmp(P.type,'ERIex_vs_Bucket')
+        if isfield(P,'all_BCK_in_one_group')
+            if P.all_BCK_in_one_group == 1
                 l1 = kind_cmp_1(:,end) == 0;
                 l2 = kind_cmp_2(:,end) == 0;
                 kind_cmp_1(l1,:) = 0;
@@ -332,11 +332,11 @@ function [BINNED,W_X] = LME_lme_bin(P)
     % *********************************************************************
     % Find the data to be binned
     % *********************************************************************
-    if strcmp(P.varname,'SST');
+    if strcmp(P.varname,'SST')
         data_cmp = (P1.C0_SST - P1.C0_OI_CLIM - P1.Buoy_Diurnal) - ...
                    (P2.C0_SST - P2.C0_OI_CLIM - P2.Buoy_Diurnal);
-        if isfield(P,'use_fundemental_SST'),
-            if P.use_fundemental_SST == 1,
+        if isfield(P,'use_fundemental_SST')
+            if P.use_fundemental_SST == 1
                 clear('data_cmp')
                 data_cmp = P1.Fundemental_SST - P2.Fundemental_SST;
             end
@@ -390,17 +390,17 @@ function [BINNED,W_X] = LME_lme_bin(P)
     BINNED.Bin_season = [];
     BINNED.Bin_kind   = [];
 
-    if P.do_simple == 0,
+    if P.do_simple == 0
         BINNED.Bin_var_clim = [];
         BINNED.Bin_var_rnd  = [];
         BINNED.Bin_var_ship = [];
     end
 
     for ct_nat = 1:max(group_nation)
-        if rem(ct_nat,100) == 0,
+        if rem(ct_nat,100) == 0
             disp(['Starting the ',num2str(ct_nat),'th Pairs'])
         end
-        if nnz(group_nation == ct_nat) > 0,
+        if nnz(group_nation == ct_nat) > 0
 
             clear('l');  l = group_nation == ct_nat;
             for var = 1:numel(var_list_2)
@@ -412,7 +412,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
             [temp_decade_uni,~,J_decade] = unique(temp_group_decade_ly_nat);
 
             for ct_dcd = 1:max(J_decade)
-                if nnz(J_decade == ct_dcd) > 0,
+                if nnz(J_decade == ct_dcd) > 0
 
                     clear('l');  l = J_decade == ct_dcd;
                     for var = 1:numel(var_list_2)
@@ -424,7 +424,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
                     [temp_region_uni,~,J_region] = unique(temp_group_region_ly_dcd);
 
                     for ct_reg = 1:max(J_region)
-                        if nnz(J_region == ct_reg) > 0,
+                        if nnz(J_region == ct_reg) > 0
 
                             clear('l');  l = J_region == ct_reg;
                             for var = 1:numel(var_list_2)
@@ -436,7 +436,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
                             [temp_season_uni,~,J_season] = unique(temp_group_season_ly_reg);
 
                             for ct_sea = 1:max(J_season)
-                                if nnz(J_season == ct_sea) > 0,
+                                if nnz(J_season == ct_sea) > 0
 
                                     clear('l');  l = J_season == ct_sea;
                                     for var = 1:numel(var_list_2)
@@ -453,7 +453,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
                                     temp_y_bin = nansum(temp_data_cmp_ly_sea .* temp_w);
                                     temp_n_bin = numel(temp_weight_ly_sea);
 
-                                    if P.do_simple == 1,
+                                    if P.do_simple == 1
                                         temp_w_bin = temp_n_bin;
                                     else
                                         clear('temp_var_clim_bin','temp_var_rnd_bin',...
@@ -473,7 +473,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
                                     BINNED.Bin_season = [BINNED.Bin_season;  temp_season_uni(ct_sea)];
                                     BINNED.Bin_kind   = [BINNED.Bin_kind;    kind_bin_uni(ct_nat,:) ];
 
-                                    if P.do_simple == 0,
+                                    if P.do_simple == 0
                                         BINNED.Bin_var_clim = [BINNED.Bin_var_clim;  temp_var_clim_bin];
                                         BINNED.Bin_var_rnd  = [BINNED.Bin_var_rnd;   temp_var_rnd_bin ];
                                         BINNED.Bin_var_ship = [BINNED.Bin_var_ship;  temp_var_ship_bin];
