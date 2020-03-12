@@ -125,23 +125,8 @@ function LME_pair_02_Screen_Pairs(P)
         % *********************************************************************
         % Reassign measurement methods
         % *********************************************************************
-        l = P1.C0_SI_4 >0 & P1.C0_SI_4 <= 0.05;
-        P1.C0_SI_4(l) = 0;
-        l = P1.C0_SI_4 >= 0.95 & P1.C0_SI_4 < 1;
-        P1.C0_SI_4(l) = 1;
-        l = P1.C0_SI_4 >0.05 & P1.C0_SI_4 <= 0.5;
-        P1.C0_SI_4(l) = 13;
-        l = P1.C0_SI_4 > 0.5 & P1.C0_SI_4 < 0.95;
-        P1.C0_SI_4(l) = 14;
-
-        l = P2.C0_SI_4 >0 & P2.C0_SI_4 <= 0.05;
-        P2.C0_SI_4(l) = 0;
-        l = P2.C0_SI_4 >= 0.95 & P2.C0_SI_4 < 1;
-        P2.C0_SI_4(l) = 1;
-        l = P2.C0_SI_4 >0.05 & P2.C0_SI_4 <= 0.5;
-        P2.C0_SI_4(l) = 13;
-        l = P2.C0_SI_4 > 0.5 & P2.C0_SI_4 < 0.95;
-        P2.C0_SI_4(l) = 14;
+        P1 = LME_function_preprocess_SST_method(P1);
+        P2 = LME_function_preprocess_SST_method(P2);
 
         % *****************************************************************
         % Remove pairs that come from the same group
@@ -192,7 +177,8 @@ function LME_pair_02_Screen_Pairs(P)
             end
             l_rm = all(grp1 == grp2,2);
         elseif strcmp(P.type,'Ship_vs_Ship')
-            l_rm = all(grp1 == grp2,2);
+            l_rm = (ismember(P1.C0_SI_4,[2 5 6 11 12]) | ismember(P2.C0_SI_4,[2 5 6 11 12]));
+            l_rm = all(grp1 == grp2,2) | l_rm';
         end
 
         if isfield(P,'use_C0_SI_2')

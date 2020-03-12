@@ -105,23 +105,8 @@ function [BINNED,W_X] = LME_lme_bin(P)
     % *********************************************************************
     % Reassign measurement methods
     % *********************************************************************
-    l = P1.C0_SI_4 >0 & P1.C0_SI_4 <= 0.05;
-    P1.C0_SI_4(l) = 0;
-    l = P1.C0_SI_4 >= 0.95 & P1.C0_SI_4 < 1;
-    P1.C0_SI_4(l) = 1;
-    l = P1.C0_SI_4 >0.05 & P1.C0_SI_4 <= 0.5;
-    P1.C0_SI_4(l) = 13;
-    l = P1.C0_SI_4 > 0.5 & P1.C0_SI_4 < 0.95;
-    P1.C0_SI_4(l) = 14;
-
-    l = P2.C0_SI_4 >0 & P2.C0_SI_4 <= 0.05;
-    P2.C0_SI_4(l) = 0;
-    l = P2.C0_SI_4 >= 0.95 & P2.C0_SI_4 < 1;
-    P2.C0_SI_4(l) = 1;
-    l = P2.C0_SI_4 >0.05 & P2.C0_SI_4 <= 0.5;
-    P2.C0_SI_4(l) = 13;
-    l = P2.C0_SI_4 > 0.5 & P2.C0_SI_4 < 0.95;
-    P2.C0_SI_4(l) = 14;
+    P1 = LME_function_preprocess_SST_method(P1);
+    P2 = LME_function_preprocess_SST_method(P2);
 
     % *********************************************************************
     % Remove pairs that have the same groupings
