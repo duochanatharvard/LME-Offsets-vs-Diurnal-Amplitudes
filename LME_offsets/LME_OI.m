@@ -5,7 +5,7 @@ function output = LME_OI(input)
     if strcmp(input,'home')
         % home directory for LME intercomparison
         load('DA_LME_directories.mat','dir_home_LME')
-        output = dir_home_LME; 
+        output = dir_home_LME;
 
     elseif strcmp(input,'read_raw')
         % home directory for ICOADS3
@@ -38,10 +38,16 @@ function output = LME_OI(input)
     elseif strcmp(input,'LME_output')
         output = [LME_OI('home'),'Step_04_LME_output/'];
 
+    elseif strcmp(input,'idv_corr')
+        output = [LME_OI('home'),'Step_05_Idv_Corr/'];
+
+    elseif strcmp(input,'rnd_corr')
+        output = [LME_OI('home'),'Step_06_Rnd_Corr/'];
+
     elseif strcmp(input,'Mis')
         load('DA_LME_directories.mat','dir_data')
         output = [dir_data,'Miscellaneous/'];
-        
+
     elseif strcmp(input,'data4figure')
         output = [LME_OI('home'),'DATA_for_figures/'];
 
