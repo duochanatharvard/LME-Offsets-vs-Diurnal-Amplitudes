@@ -88,7 +88,13 @@ function [WM,ST,NUM] = LME_correct(P)
 
             % remove non-ship and non bucket, ERI, Hull, or missing SSTs
             if strcmp(P.method,'Ship')
-                l_rm = ~ismember(DATA.C0_SI_4,[-1 0 1 3 13 14]);
+                
+                target_list = [-1 0 1 3 13 14];
+                if isfield(P,'only_correct')
+                    target_list = P.only_correct;
+                end
+                
+                l_rm = ~ismember(DATA.C0_SI_4,target_list);
                 var_list = fieldnames(DATA);
                 for var = 1:numel(var_list)
                     if ~ismember(var_list{var},{'C0_ID','C0_CTY_CRT','DCK'})
