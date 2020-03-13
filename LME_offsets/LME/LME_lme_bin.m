@@ -127,7 +127,6 @@ function [BINNED,W_X] = LME_lme_bin(P)
             end
         end
     end
-    l_rp = all(grp1 == grp2,2);
 
     if strcmp(P.type,'ERI_vs_Bucket') || strcmp(P.type,'ERIex_vs_Bucket')
         if isfield(P,'all_BCK_in_one_group')
@@ -347,8 +346,9 @@ function [BINNED,W_X] = LME_lme_bin(P)
                                     group_region', group_season'],'rows');
 
     disp(' ')
-    disp(['A total of ',num2str(size(kind_binned_uni,1)),' combinations'])
-
+    disp(['A total of ',num2str(size(kind_binned_uni,1)),' combinations of groups + region + decade'])
+    disp(['A total of ',num2str(size(kind_bin_uni,1)),' combinations of groups'])
+    
     % *********************************************************************
     % Compute the weights in the constrain
     % *********************************************************************
@@ -372,20 +372,32 @@ function [BINNED,W_X] = LME_lme_bin(P)
     disp('==============================================================>')
     disp('Start Binning ...')
 
-    BINNED.Bin_y = [];
-    BINNED.Bin_w = [];
-    BINNED.Bin_n = [];
-    BINNED.Bin_region = [];
-    BINNED.Bin_decade = [];
-    BINNED.Bin_season = [];
-    BINNED.Bin_kind   = [];
+    % BINNED.Bin_y = [];
+    % BINNED.Bin_w = [];
+    % BINNED.Bin_n = [];
+    % BINNED.Bin_region = [];
+    % BINNED.Bin_decade = [];
+    % BINNED.Bin_season = [];
+    % BINNED.Bin_kind   = [];
+    N_total = size(kind_binned_uni,1);
+    BINNED.Bin_y = nan(N_total,1);
+    BINNED.Bin_w = nan(N_total,1);
+    BINNED.Bin_n = nan(N_total,1);
+    BINNED.Bin_region = nan(N_total,1);
+    BINNED.Bin_decade = nan(N_total,1);
+    BINNED.Bin_season = nan(N_total,1);
+    BINNED.Bin_kind = nan(N_total,size(kind_bin_uni,2));
 
     if P.do_simple == 0
-        BINNED.Bin_var_clim = [];
-        BINNED.Bin_var_rnd  = [];
-        BINNED.Bin_var_ship = [];
+        % BINNED.Bin_var_clim = [];
+        % BINNED.Bin_var_rnd  = [];
+        % BINNED.Bin_var_ship = [];
+        BINNED.Bin_var_clim = nan(N_total,1);
+        BINNED.Bin_var_rnd  = nan(N_total,1);
+        BINNED.Bin_var_ship = nan(N_total,1);
     end
 
+    ct_save = 0;
     for ct_nat = 1:max(group_nation)
         if rem(ct_nat,100) == 0
             disp(['Starting the ',num2str(ct_nat),'th Pairs'])
@@ -455,18 +467,29 @@ function [BINNED,W_X] = LME_lme_bin(P)
                                         temp_w_bin = 1./temp_sigma_2;
                                     end
 
-                                    BINNED.Bin_y = [BINNED.Bin_y;  temp_y_bin];
-                                    BINNED.Bin_w = [BINNED.Bin_w;  temp_w_bin];
-                                    BINNED.Bin_n = [BINNED.Bin_n;  temp_n_bin];
-                                    BINNED.Bin_region = [BINNED.Bin_region;  temp_region_uni(ct_reg)];
-                                    BINNED.Bin_decade = [BINNED.Bin_decade;  temp_decade_uni(ct_dcd)];
-                                    BINNED.Bin_season = [BINNED.Bin_season;  temp_season_uni(ct_sea)];
-                                    BINNED.Bin_kind   = [BINNED.Bin_kind;    kind_bin_uni(ct_nat,:) ];
+                                    ct_save = ct_save + 1;
+                                    % BINNED.Bin_y = [BINNED.Bin_y;  temp_y_bin];
+                                    % BINNED.Bin_w = [BINNED.Bin_w;  temp_w_bin];
+                                    % BINNED.Bin_n = [BINNED.Bin_n;  temp_n_bin];
+                                    % BINNED.Bin_region = [BINNED.Bin_region;  temp_region_uni(ct_reg)];
+                                    % BINNED.Bin_decade = [BINNED.Bin_decade;  temp_decade_uni(ct_dcd)];
+                                    % BINNED.Bin_season = [BINNED.Bin_season;  temp_season_uni(ct_sea)];
+                                    % BINNED.Bin_kind   = [BINNED.Bin_kind;    kind_bin_uni(ct_nat,:) ];
+                                    BINNED.Bin_y(ct_save) = temp_y_bin;
+                                    BINNED.Bin_w(ct_save) = temp_w_bin;
+                                    BINNED.Bin_n(ct_save) = temp_n_bin;
+                                    BINNED.Bin_region(ct_save) = temp_region_uni(ct_reg);
+                                    BINNED.Bin_decade(ct_save) = temp_decade_uni(ct_dcd);
+                                    BINNED.Bin_season(ct_save) = temp_season_uni(ct_sea);
+                                    BINNED.Bin_kind(ct_save,:) = kind_bin_uni(ct_nat,:);
 
                                     if P.do_simple == 0
-                                        BINNED.Bin_var_clim = [BINNED.Bin_var_clim;  temp_var_clim_bin];
-                                        BINNED.Bin_var_rnd  = [BINNED.Bin_var_rnd;   temp_var_rnd_bin ];
-                                        BINNED.Bin_var_ship = [BINNED.Bin_var_ship;  temp_var_ship_bin];
+                                        % BINNED.Bin_var_clim = [BINNED.Bin_var_clim;  temp_var_clim_bin];
+                                        % BINNED.Bin_var_rnd  = [BINNED.Bin_var_rnd;   temp_var_rnd_bin ];
+                                        % BINNED.Bin_var_ship = [BINNED.Bin_var_ship;  temp_var_ship_bin];
+                                        BINNED.Bin_var_clim(ct_save) = temp_var_clim_bin;
+                                        BINNED.Bin_var_rnd(ct_save)  = temp_var_rnd_bin;
+                                        BINNED.Bin_var_ship(ct_save) = temp_var_ship_bin;
                                     end
 
                                     clear('temp_w','temp_y_bin','temp_w_bin',...
