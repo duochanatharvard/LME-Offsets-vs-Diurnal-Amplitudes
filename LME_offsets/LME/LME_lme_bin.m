@@ -60,7 +60,7 @@ function [BINNED,W_X] = LME_lme_bin(P)
         disp('==============================================================>')
         disp('Load in data ...')
         for yr = P.yr_list
-            for mon = P.mon_list
+            for mon = 1:12
 
                 disp(['Starting year: ',num2str(yr),'  month:', num2str(mon)])
                 file_load = [dir_load,'IMMA1_R3.0.0_',num2str(yr),'-',...
@@ -155,6 +155,17 @@ function [BINNED,W_X] = LME_lme_bin(P)
             my = nanmean([P1.C0_LAT; P2.C0_LAT],1);
             Id_region = LME_lme_effect_regional(mx,my,5);
             l_rm = l_rm | ~ismember(Id_region',P.select_region);
+        end
+    end
+
+    % Remove points that does not belong to a certain month ---------------
+    if isfield(P,'mon_list')
+        if numel(P.mon_list) ~= 12
+            my = nanmean([P1.C0_LAT; P2.C0_LAT],1);
+            mon_temp = P1.C0_MO;
+            mon_temp(my < 0) = mon_temp(my < 0) + 6;
+            mon_temp(mon_temp > 12) = mon_temp(mon_temp > 12) - 12;
+            l_rm = l_rm | ~ismember(mon_temp',P.mon_list);
         end
     end
 
