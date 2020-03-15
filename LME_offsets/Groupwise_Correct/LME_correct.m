@@ -20,13 +20,6 @@ function [WM,ST,NUM] = LME_correct(P)
     end
 
     % *********************************************************************
-    % Read the LME outputs 
-    % *********************************************************************
-    dir_lme = LME_OI('LME_output');  
-    file_lme = [dir_lme,'LME_',P.save_lme,'.mat'];
-    lme = load(file_lme,'out','out_rnd');
-
-    % *********************************************************************
     % Set Parameters for gridding 
     % *********************************************************************
     reso_x = P.reso_x;
@@ -47,10 +40,31 @@ function [WM,ST,NUM] = LME_correct(P)
     end
 
     % *********************************************************************
+    % Read the LME outputs 
+    % & 
     % Assigning effects to be corrected 
     % *********************************************************************
-    clear('E')
-    E = LME_correct_assign_effect(lme,P);
+    dir_lme = LME_OI('LME_output');
+    if numel(P.mon_list) == 12
+
+        file_lme = [dir_lme,'LME_',P.save_lme,'.mat'];
+        lme = load(file_lme,'out','out_rnd');
+        
+        clear('E')
+        E = LME_correct_assign_effect(lme,P);
+    else
+        mon_abb = 'JFMAMJJASOND';
+        clear('E','lme_groups')
+        for ct = 1:12
+            li = [ct-1 ct ct+1];  li(li<1) = li(li<1) + 12;  li(li>12) = li(li>12) - 12;
+            file_lme = [dir_lme,'LME_',P.save_sum,'_mon_',mon_abb(li),'.mat'];
+            
+            lme = load(file_lme,'out','out_rnd');
+            E{ct} = LME_correct_assign_effect(lme,P);
+            lme_groups{ct} = lme.out.unique_grp;
+        end
+        clear('lme')
+    end
 
     % *********************************************************************
     % Initialize the correction 
@@ -142,12 +156,23 @@ function [WM,ST,NUM] = LME_correct(P)
 
             % *************************************************************
             % Applying Correction 
+            % The correction follows: 1. all 2.fix 3.reg 4.dcd 5.sea
+            % the output is correction but not bias
             % *************************************************************
             disp(['Applying Correction ...'])
-            clear('CORR')
-            CORR = LME_correct_find_corr(DATA,E,P,ID,kind,lme.out.unique_grp);
-                % The correction follows: 1. all 2.fix 3.reg 4.dcd 5.sea
-                % the output is correction but not bias
+            if numel(P.mon_list) == 12
+                clear('CORR')
+                CORR = LME_correct_find_corr(DATA,E,P,ID,kind,lme.out.unique_grp);
+            else
+                clear('CORR_NH','CORR_SH','CORR')
+                m_NH = mon;
+                CORR_NH = LME_correct_find_corr(DATA,E{m_NH},P,ID,kind,lme_groups{m_NH});
+                m_SH = mon + 6;  m_SH(m_SH<1) = m_SH(m_SH<1) + 12;  m_SH(m_SH>12) = m_SH(m_SH>12) - 12;
+                CORR_SH = LME_correct_find_corr(DATA,E{m_SH},P,ID,kind,lme_groups{md_SH});
+                l_NH = DATA.C0_LAT > 0;
+                CORR(l_NH) = CORR_NH(l_NH);
+                CORR(~l_NH) = CORR_SH(~l_NH);
+            end
 
             % *************************************************************
             % Gridding data 
