@@ -170,8 +170,8 @@ function [WM,ST,NUM] = LME_correct(P)
                 m_SH = mon + 6;  m_SH(m_SH<1) = m_SH(m_SH<1) + 12;  m_SH(m_SH>12) = m_SH(m_SH>12) - 12;
                 CORR_SH = LME_correct_find_corr(DATA,E{m_SH},P,ID,kind,lme_groups{m_SH});
                 l_NH = DATA.C0_LAT > 0;
-                CORR(l_NH) = CORR_NH(l_NH);
-                CORR(~l_NH) = CORR_SH(~l_NH);
+                CORR.sst_correction(:,l_NH) = CORR_NH.sst_correction(:,l_NH);
+                CORR.sst_correction(:,~l_NH) = CORR_SH.sst_correction(:,~l_NH);
             end
 
             % *************************************************************
