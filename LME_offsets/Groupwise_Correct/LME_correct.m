@@ -58,7 +58,7 @@ function [WM,ST,NUM] = LME_correct(P)
         for ct = 1:12
             li = [ct-1 ct ct+1];  li(li<1) = li(li<1) + 12;  li(li>12) = li(li>12) - 12;
             file_lme = [dir_lme,'LME_',P.save_sum,'_mon_',mon_abb(li),'.mat'];
-            
+            disp(file_lme)
             lme = load(file_lme,'out','out_rnd');
             E{ct} = LME_correct_assign_effect(lme,P);
             lme_groups{ct} = lme.out.unique_grp;
@@ -168,7 +168,7 @@ function [WM,ST,NUM] = LME_correct(P)
                 m_NH = mon;
                 CORR_NH = LME_correct_find_corr(DATA,E{m_NH},P,ID,kind,lme_groups{m_NH});
                 m_SH = mon + 6;  m_SH(m_SH<1) = m_SH(m_SH<1) + 12;  m_SH(m_SH>12) = m_SH(m_SH>12) - 12;
-                CORR_SH = LME_correct_find_corr(DATA,E{m_SH},P,ID,kind,lme_groups{md_SH});
+                CORR_SH = LME_correct_find_corr(DATA,E{m_SH},P,ID,kind,lme_groups{m_SH});
                 l_NH = DATA.C0_LAT > 0;
                 CORR(l_NH) = CORR_NH(l_NH);
                 CORR(~l_NH) = CORR_SH(~l_NH);
