@@ -4,11 +4,11 @@ function kind_out = LME_function_preprocess_deck(kind,P)
     % ********************
     % Change DE into DD **
     % ********************
-    if ~isfield(P,'mute_read')
-        disp('Combine east and west germany')
-    end
-    logic_1 = ismember(double(kind(:,1:2)),['DD'],'rows');
-    kind(logic_1,2) = 'E';
+    % if ~isfield(P,'mute_read')
+    %     disp('Combine east and west germany')
+    % end
+    % logic_1 = ismember(double(kind(:,1:2)),['DD'],'rows');
+    % kind(logic_1,2) = 'E';
 
     % ********************
     % Change UK into GB **
@@ -41,12 +41,10 @@ function kind_out = LME_function_preprocess_deck(kind,P)
     end
 
     kind_out = kind;
-    
+
     if 0,  % Testing dataset
         kind = ['DE',128; 'DD',128; 'UK',122; 'UK',122;
                 'GB',135; '  ',192; '  ',254; 'JP',118;
                 'JP',762; 'UK',233];
     end
 end
-
-
