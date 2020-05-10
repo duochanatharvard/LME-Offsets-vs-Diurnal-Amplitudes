@@ -1,11 +1,11 @@
 % FP95 wooden bucket model:
 % SST_out = BKT_MD_STP_2_MD_WOODEN_GRD_SIZ(true_SST,true_AT,e_air,...
-%                             u_environment,Cs,direct_ratio,zenith_angle,P)  
-% 
+%                             u_environment,Cs,direct_ratio,zenith_angle,P)
+%
 % P.deck_time   P.solar_shading   P.s_environment   P.thickness   P.wind_experience
 
 function SST_out = BKT_MD_STP_2_MD_WOODEN_GRD_SIZ_for_Chan2020(true_SST,true_AT,e_air,...
-    u_environment,Cs,direct_ratio,zenith_angle,P,PP)  
+    u_environment,Cs,direct_ratio,zenith_angle,P,PP)
     % P.deck_time,    P.solar_shading,   P.s_environment   P.thickness
 
     % Parameter of computation --------------------------------------------
@@ -59,12 +59,12 @@ function SST_out = BKT_MD_STP_2_MD_WOODEN_GRD_SIZ_for_Chan2020(true_SST,true_AT,
     Top_latent_on    = PP.do_latent;
     Top_long_on      = PP.do_long;
     Top_solar_on     = PP.do_solar;
-    
+
     Wall_sensible_on = PP.do_sensible;
     Wall_latent_on   = PP.do_latent;
     Wall_long_on     = PP.do_long;
     Wall_solar_on    = PP.do_solar;
-    
+
     Base_sensible_on = PP.do_sensible;
     Base_latent_on   = PP.do_latent;
     Base_long_on     = PP.do_long;
@@ -80,8 +80,8 @@ function SST_out = BKT_MD_STP_2_MD_WOODEN_GRD_SIZ_for_Chan2020(true_SST,true_AT,
     % effective wind speed for different stage of measurement -------------
     u0_haul = sqrt(u_reduced_haul.^2 + s_reduced_haul.^2);
     u0_deck = sqrt(u_reduced_deck.^2 + s_reduced_deck.^2);
-    
-    nanmean(u0_deck(:))
+
+    nanmean(u0_deck(:));
 
     % Determine the Rayleigh coefficient ----------------------------------
     Re_haul = u0_haul * diameter ./ viscosity;

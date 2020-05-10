@@ -1,4 +1,4 @@
-function [da_out,bias_out] = DA_LME_function_bucket_model(ct_reg,t_id,shade_id,...
+function [da_out,bias_out,out_SST] = DA_LME_function_bucket_model(ct_reg,t_id,shade_id,...
                       alpha_id,size_id,mixing_id,wind_id,thick_id,eri_bias)
 
     %% *********************************************************************
@@ -157,6 +157,8 @@ function [da_out,bias_out] = DA_LME_function_bucket_model(ct_reg,t_id,shade_id,.
                 init_SST(ct,1,:,:),true_AT(ct,1,:,:),e_air(ct,1,:,:),...
                 u_environment(ct,1,:,:),Qs(ct,1,:,:),direct_ratio(ct,1,:,:),...
                 zenith_angle(ct,1,:,:),P,PP);
+            
+            out_SST{ct_var} = SST_raw;
 
             t_w(:,:,ct_var) = SST_raw(1,1,:,:,end);
             t_i(:,:,ct_var) = SST_raw(1,1,:,:,1);

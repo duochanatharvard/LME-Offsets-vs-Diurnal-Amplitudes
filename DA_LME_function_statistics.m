@@ -1,6 +1,20 @@
-function output = DA_LME_function_statistics(yr_start,reg_sea)
+function output = DA_LME_function_statistics(yr_start,reg_sea,revision)
 
-    data  = load('All_lme_offsets_and_diurnal_amplitudes.mat');
+    if revision == 0
+        data = load('All_lme_offsets_and_diurnal_amplitudes.mat');                    
+    elseif revision == 1
+        data = load('All_lme_offsets_and_diurnal_amplitudes_sens_wmo.mat');  
+    elseif revision == 2
+        data = load('All_lme_offsets_and_diurnal_amplitudes_sens_not_infer.mat');  
+    elseif revision == 3
+        data = load('All_lme_offsets_and_diurnal_amplitudes_sens_nation_level.mat');  
+    elseif revision == 4
+        data = load('All_lme_offsets_and_diurnal_amplitudes.mat');
+        data_clim = load('All_lme_offsets_and_diurnal_amplitudes_clim_diurnal.mat');  
+        data.da = data.da - data_clim.da;
+        data.da_std = sqrt(data.da_std.^2 + data_clim.da_std.^2);
+    end
+    
     grp   = data.grp;
     yr0   = 1879;                                  % The first year of data
 
@@ -46,10 +60,10 @@ function output = DA_LME_function_statistics(yr_start,reg_sea)
     % *********************************************************************
     % Panel c. quantile for diurnal cycle and LME
     % *********************************************************************
-    output.da_quan_ex_ERI  = quantile(x,[0 0.025 0.25 0.5 0.75 0.975 1]);
+    output.da_quan_ex_ERI  = quantile(x,        [0 0.025 0.25 0.5 0.75 0.975 1]);
     output.da_quan         = quantile([x;x_eri],[0 0.025 0.25 0.5 0.75 0.975 1]);
-    output.lme_quan_ex_ERI = quantile(y,[0 0.025 0.05 0.1 0.25 0.5 0.75 0.975 1]);
-    output.lme_quan        = quantile([y;y_eri],[0 0.025 0.15 0.2 0.25 0.5 0.75 0.975 1]);
+    output.lme_quan_ex_ERI = quantile(y,        [0 0.025 0.05 0.1 0.25 0.5 0.75 0.975 1]);
+    output.lme_quan        = quantile([y;y_eri],[0 0.025 0.05 0.1 0.25 0.5 0.75 0.975 1]);
     
     % *********************************************************************
     % Porject and find the marginal distrubution of individual points

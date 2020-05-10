@@ -96,7 +96,8 @@ function DA_LME_Fig_Step_01_prepare_data(yr_start,yr_end,ct_reg,do_ERI,do_C0_SI_
 
         % Prepare for data to be plotted: diurnal -------------------------
         clear('aa')
-        for i = 1:1000
+        aa = zeros([size(fit_out_grp),100000]);
+        for i = 1:100000
             aa(:,:,:,i) = normrnd(fit_out_grp,fit_out_std_grp);
         end
         
@@ -291,8 +292,14 @@ function DA_LME_Fig_Step_01_prepare_data(yr_start,yr_end,ct_reg,do_ERI,do_C0_SI_
         DATA_pic.diurnal_quantile(:,:,3) = nanmean(BCK.diurnal_quantile_adj(:,:,[6 7 8],1),3);
         DATA_pic.num(:,3) = nansum(BCK.num_adj(:,[6 7 8],1),2);
 
-        DATA_pic.diurnal_buoy(:,1) = nanmean(BCK.diurnal_adj(:,1:12,2),2);
-        DATA_pic.diurnal_buoy(:,2) = nanmean(BCK.diurnal_adj(:,1:12,3),2);
+        DATA_pic.diurnal_buoy(:,1,1) = nanmean(BCK.diurnal_adj(:,1:12,2),2);
+        DATA_pic.diurnal_buoy(:,1,2) = nanmean(BCK.diurnal_adj(:,1:12,3),2);
+
+        DATA_pic.diurnal_buoy(:,2,1) = nanmean(BCK.diurnal_adj(:,[1 2 12],2),2);
+        DATA_pic.diurnal_buoy(:,2,2) = nanmean(BCK.diurnal_adj(:,[1 2 12],3),2);
+
+        DATA_pic.diurnal_buoy(:,3,1) = nanmean(BCK.diurnal_adj(:,[6 7 8],2),2);
+        DATA_pic.diurnal_buoy(:,3,2) = nanmean(BCK.diurnal_adj(:,[6 7 8],3),2);
         
         % *****************************************************************
         % Save data 2

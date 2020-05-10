@@ -1,4 +1,4 @@
-function DA_POST_sum_and_fitting(do_sum,yr_start,yr_end,method)
+function DA_POST_sum_and_fitting(do_sum,yr_start,yr_end,method,do_nation)
 
     if 0,
         % how to call this function
@@ -7,17 +7,32 @@ function DA_POST_sum_and_fitting(do_sum,yr_start,yr_end,method)
         DA_POST_sum_and_fitting(1,[],[],'ERI');
         
         % Step 2: loop over years and fit for individual groups
-        yr_start = 1880;
-        yr_end   = yr_start + 19;
-        method   = 'bucket';
-        DA_POST_sum_and_fitting(0,yr_start,yr_end,method);
+        for yr_start = 1880:1990
+            yr_end   = yr_start + 19;
+            method   = 'bucket';
+            do_nation  = 0;
+            DA_POST_sum_and_fitting(0,yr_start,yr_end,method,do_nation);
+            do_nation  = 1;
+            DA_POST_sum_and_fitting(0,yr_start,yr_end,method,do_nation);
+        end
+
+        for yr_start = 1920:1990
+            yr_end   = yr_start + 19;
+            method   = 'ERI';
+            do_nation  = 0;
+            DA_POST_sum_and_fitting(0,yr_start,yr_end,method,do_nation);
+            do_nation  = 1;
+            DA_POST_sum_and_fitting(0,yr_start,yr_end,method,do_nation);
+        end
+
     end
     
     % *************************************************************************
     % Set directories
     % *************************************************************************
     dir_save  = DIURNAL_OI('data4figure');
-
+    % dir_save = '/Users/duochan/Data/DIURNAL_2019/DATA_for_figures_C0_SI_2/';
+    
     % *************************************************************************
     % Set parameters
     % *************************************************************************
@@ -38,7 +53,7 @@ function DA_POST_sum_and_fitting(do_sum,yr_start,yr_end,method)
     % *************************************************************************
     % Step 1. Prepare for data
     % *************************************************************************
-    if do_sum == 1,
+    if do_sum == 1
         % *********************************************************************
         % Read data of diurnal signals from individual ships
         % *********************************************************************
@@ -47,7 +62,7 @@ function DA_POST_sum_and_fitting(do_sum,yr_start,yr_end,method)
             '_relative_to_',P.relative,'.mat'];
         fid = fopen(file_save);
 
-        if fid <= 0,
+        if fid <= 0
             var_list = {'C0_LAT','C0_LON','C0_SI_4','D1_EXP','D2_EXP',...
                 'D1_EX','D2_EX','C1_DCK','C0_YR','C0_MO','C0_LCL','C98_UID',...
                 'Diurnal_signal','Fundemental_SST','Day_indicator','C0_CTY_CRT',...
@@ -79,19 +94,19 @@ function DA_POST_sum_and_fitting(do_sum,yr_start,yr_end,method)
                             'Diurnal_signal','Fundemental_SST','Day_indicator',...
                             'C0_CTY_CRT','C98_UID');
                         
-                        temp_icoads3 = load(file_icoads3,'C0_SI_2','C0_SI_3','C98_UID');
+                        temp_icoads3 = load(file_icoads3,'C0_SI_4','C0_SI_2','C0_SI_3','C98_UID');
                         [~,pst] = ismember(temp.C98_UID,temp_icoads3.C98_UID);
                         temp.C0_SI_2 = temp_icoads3.C0_SI_2(pst);
                         temp.C0_SI_3 = temp_icoads3.C0_SI_3(pst);
 
-                        if strcmp(method,'bucket'),
+                        if strcmp(method,'bucket')
                             l = temp.C0_SI_4 >= 0 &  temp.C0_SI_4 <= 0.05;
-                        elseif strcmp(method,'ERI'),
+                        elseif strcmp(method,'ERI')
                             l = temp.C0_SI_4 >= 0.95 &  temp.C0_SI_4 <= 1;
                         end
 
                         for var = 1:numel(var_list)
-                            if ~ismember(var_list{var},{'C0_ID','C0_CTY_CRT','DCK'}),
+                            if ~ismember(var_list{var},{'C0_ID','C0_CTY_CRT','DCK'})
                                 eval([var_list{var},' = [',var_list{var},'  temp.',var_list{var},'(l)];']);
                             else
                                 eval([var_list{var},' = [',var_list{var},'; temp.',var_list{var},'(l,:)];']);
@@ -122,12 +137,12 @@ function DA_POST_sum_and_fitting(do_sum,yr_start,yr_end,method)
             '_relative_to_',P.relative,'.mat'];
         DATA = load(file_load);
 
-        use_C0_SI_2 = 0;
+        use_C0_SI_2 = 0;                        % TODO
 
         l = DATA.C0_YR >= yr_start & DATA.C0_YR <= yr_end & ...
             ismember(DATA.Day_indicator,[1]);
         
-        if use_C0_SI_2 == 1,
+        if use_C0_SI_2 == 1
             l = l & ismember(DATA.C0_SI_2,[0 1 -2 3]);
         end
         
@@ -143,11 +158,13 @@ function DA_POST_sum_and_fitting(do_sum,yr_start,yr_end,method)
         exp2    = DATA.D2_EXP(l);
         clear('l','DATA')
         
-        DA_relative_to = 1;            % compute the absolute diurnal amplitude
-        if DA_relative_to == 2,        % standard case: buoy chan 2019
-            di_sig = di_sig - exp1;
-        elseif  DA_relative_to == 3,   % standard case: buoy MB16
+        DA_relative_to = 2;            % compute the absolute diurnal amplitude         % TODO
+        if DA_relative_to == 2         % standard case: buoy chan 2019
+            di_sig = exp1;
+        elseif  DA_relative_to == 3    % standard case: buoy MB16
             di_sig = di_sig - exp2;
+        elseif  DA_relative_to == 4    % standard case: buoy MB16
+            di_sig = exp1;
         end
 
         mon_adj             = month;
@@ -162,6 +179,10 @@ function DA_POST_sum_and_fitting(do_sum,yr_start,yr_end,method)
         P_dck.connect_Kobe = 1;
         grp(:,1:3) = LME_function_preprocess_deck(double(grp(:,1:3)),P_dck);
         
+        if do_nation == 1
+            grp = grp(:,1:2);
+        end
+        
         [grp_uni,~,J] = unique(grp,'rows');
         key           = 1000;
         c             = hist(J,1:1:max(J));
@@ -169,7 +190,7 @@ function DA_POST_sum_and_fitting(do_sum,yr_start,yr_end,method)
         groups        = grp_uni(l_use_grp,:);
 
 
-        for ct_reg = [1 3 7]
+        for ct_reg = [1 3 7]            % TODO
 
             O = DA_LME_function_get_region_name(ct_reg);
             l = ismember(region,O.reg_list);
@@ -227,9 +248,15 @@ function DA_POST_sum_and_fitting(do_sum,yr_start,yr_end,method)
             end
 
             % Save data
-            file_save = [dir_save,'STATS_',method,'_DA_signals_',num2str(yr_start),...
-                '_',num2str(yr_end),'_',O.region_name,da_app,...
-                '_relative_to_',P.relative,'.mat'];
+            if do_nation == 1
+                file_save = [dir_save,'STATS_',method,'_DA_signals_nation_level_',num2str(yr_start),...
+                    '_',num2str(yr_end),'_',O.region_name,da_app,...
+                    '_relative_to_',P.relative,'.mat'];
+            else
+                file_save = [dir_save,'STATS_',method,'_DA_signals_',num2str(yr_start),...
+                    '_',num2str(yr_end),'_',O.region_name,da_app,...
+                    '_relative_to_',P.relative,'.mat'];
+            end
             save(file_save,'diurnal','diurnal_quantile','num','fit_out','fit_out_std',...
                 'diurnal_adj','diurnal_quantile_adj','num_adj','fit_out_adj','fit_out_std_adj',...
                 'diurnal_grp','diurnal_quantile_grp','num_grp','fit_out_grp','fit_out_std_grp','groups','-v7.3')

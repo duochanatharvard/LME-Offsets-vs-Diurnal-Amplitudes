@@ -1,7 +1,25 @@
-function DA_LME_function_scatter_plot(method,yr_start,reg_sea)
+function DA_LME_function_scatter_plot(method,yr_start,reg_sea,revision)
 
     if strcmp(method,'bucket')
-        data = load('All_lme_offsets_and_diurnal_amplitudes.mat');
+        if revision == 0
+            data = load('All_lme_offsets_and_diurnal_amplitudes.mat');                    
+            off_set = revision;
+        elseif revision == 1
+            data = load('All_lme_offsets_and_diurnal_amplitudes_sens_wmo.mat');  
+            off_set = revision;
+        elseif revision == 2
+            data = load('All_lme_offsets_and_diurnal_amplitudes_sens_not_infer.mat');  
+            off_set = revision;
+        elseif revision == 3
+            data = load('All_lme_offsets_and_diurnal_amplitudes_sens_nation_level.mat');  
+            off_set = revision;
+        elseif revision == 4
+            data = load('All_lme_offsets_and_diurnal_amplitudes.mat');
+            data_clim = load('All_lme_offsets_and_diurnal_amplitudes_clim_diurnal.mat');  
+            off_set = revision;
+            data.da = data.da - data_clim.da;
+            data.da_std = sqrt(data.da_std.^2 + data_clim.da_std.^2);
+        end
         num_of_colors        = 13;
         num_of_marker_shapes = 6;
     else
@@ -49,6 +67,12 @@ function DA_LME_function_scatter_plot(method,yr_start,reg_sea)
     % *********************************************************************
     % Prepare for data to be plotted
     % *********************************************************************
+    if reg_sea ~= 1
+        l_legend = ~isnan(nanmean(data.da(2:end,yr_start-yr0,2:5),3));
+    else
+        l_legend = ~isnan(nanmean(data.da(2:end,[1890:20:1990]-yr0,1),2));
+    end
+    
     x     = data.da(2:end,yr_start-yr0,reg_sea);
     y     = data.lme(2:end,yr_start-yr0,reg_sea);
     x_std = data.da_std(2:end,yr_start-yr0,reg_sea);
@@ -79,7 +103,7 @@ function DA_LME_function_scatter_plot(method,yr_start,reg_sea)
     % *********************************************************************
     % Generate plot
     % *********************************************************************
-    figure((yr_start-yr0-1)*4+reg_sea); clf; hold on;
+    figure((yr_start-yr0-1)*4+reg_sea + off_set); clf; hold on;
     DA_LME_plot_square_panels(x,y,x_std,y_std,n,x_eri,y_eri,x_buoy,y_buoy,PP)
     if strcmp(method,'bucket')
         CDF_panel([0 0.6 -0.6 0.6],'','','Diurnal Amplitude (^oC)','Offsets (^oC)','fontsize',18);
@@ -89,6 +113,7 @@ function DA_LME_function_scatter_plot(method,yr_start,reg_sea)
         title([num2str(yr_start),' - ',num2str(yr_start+19)])
         daspect([0.4 1.4 1])  
     end
+    set(gca,'xtick',[0.1:0.1:0.5],'ytick',[-.4:.2:.4])
 
     set(gcf,'position',[.1 1 7 7],'unit','inches')
     set(gcf,'position',[.1 1 7 7],'unit','inches')
@@ -99,21 +124,46 @@ function DA_LME_function_scatter_plot(method,yr_start,reg_sea)
     % *********************************************************************
     group = data.grp(2:end,:); 
     in_name = {};
-    for ct = 1:size(group,1);
+    for ct = 1:size(group,1)
         name = double(group(ct,:));
-        if name(1) > 100
-            in_name{ct} = ['      DCK ',num2str(name(3))];
+        if numel(name) > 2
+            if name(1) > 100
+                in_name{ct} = ['      DCK ',num2str(name(3))];
+            else
+                in_name{ct} = [name(1:2),' DCK ',num2str(name(3))];
+            end
         else
-            in_name{ct} = [name(1:2),' DCK ',num2str(name(3))];
+            if name(1) > 100
+                in_name{ct} = ['DCK ',num2str(name(1))];
+            else
+                in_name{ct} = [char(name(1:2))];
+            end
         end
     end
     
-    figure(1000); clf; hold on;
-    CDF_scatter_legend(in_name,out_st,out_col,[1,7,1],'fontsize',15,'mksize',13)
-    axis([1 7.3 -ceil(size(group,1)/6) 0])
-    set(gcf,'color','w')
-    set(gcf,'position',[.1 1 14 4],'unit','inches')
-    set(gcf,'position',[.1 1 14 4/ceil(66/6)*ceil(size(group,1)/6)],'unit','inches')
+    figure(1000+off_set); clf; hold on;
+    if reg_sea == 1 
+        if revision ~= 3 % == 3
+            CDF_scatter_legend(in_name(l_legend),out_st(l_legend),out_col(l_legend,:),[1,7,1],'fontsize',15,'mksize',13)
+            axis([1 7.3 -ceil(nnz(l_legend)/6) 0])
+            set(gcf,'color','w')
+            set(gcf,'position',[.1 1 14 4],'unit','inches')
+            set(gcf,'position',[.1 1 14 4/ceil(66/6)*ceil(size(group,1)/6)],'unit','inches')
+        else
+            CDF_scatter_legend(in_name(l_legend),out_st(l_legend),out_col(l_legend,:),[1,2,1],'fontsize',15,'mksize',13)
+            axis([1 3.3 -ceil(nnz(l_legend)/2) 0])
+            set(gcf,'color','w')
+            set(gcf,'position',[.1 1 14 4],'unit','inches')
+            set(gcf,'position',[.1 1 5 nnz(l_legend)/4],'unit','inches') 
+        end
+    else
+        CDF_scatter_legend(in_name(l_legend),out_st(l_legend),out_col(l_legend,:),[1,1,1],'fontsize',15,'mksize',13)
+        axis([1 1.5 -ceil(nnz(l_legend)) 0])
+        set(gcf,'color','w')
+        set(gcf,'position',[.1 1 14 4],'unit','inches')
+        set(gcf,'position',[.1 1 3 nnz(l_legend)/2.8],'unit','inches')
+    end
+   
     
 end
 
@@ -128,6 +178,14 @@ function DA_LME_plot_square_panels(x,y,x_std,y_std,n,x_eri,y_eri,x_buoy,y_buoy,P
     
     x1_pic = 0;
     x2_pic = 0.6;
+    
+    if 0    % To plot the residual offsets
+        y = y - slope * x - inter;  
+        slope_member = slope_member - slope;
+        slope = 0;
+        inter_member = inter_member - inter;
+        inter = 0;
+    end
     
     % Plot the shading for 2 s.d. 
     x_temp = x1_pic: 0.01:x2_pic;
@@ -166,8 +224,8 @@ function DA_LME_plot_square_panels(x,y,x_std,y_std,n,x_eri,y_eri,x_buoy,y_buoy,P
         end
     end
     
-    plot(x_eri,y_eri,'o','linewi',3,'markersize',6,'color',PP.eri_color);
-    plot(x_eri,y_eri,'o','linewi',3,'markersize',15,'color',PP.eri_color);  
+    % plot(x_eri,y_eri,'o','linewi',3,'markersize',6,'color',PP.eri_color);
+    % plot(x_eri,y_eri,'o','linewi',3,'markersize',15,'color',PP.eri_color);  
 
     if ~isnan(y_buoy)
         plot(x_buoy,y_buoy,'bo','linewi',3,'markersize',6,'color',[.9 .1 0]);
