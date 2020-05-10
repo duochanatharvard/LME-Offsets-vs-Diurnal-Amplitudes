@@ -44,6 +44,8 @@ addpath(genpath(pwd));
 DA_LME_main
 ```
 
+In addition to data for reproducing the standard analysis as introduced in the main text, we also provide results from a variety of sensitivity tests including: prioritizing WMO No.47 metadata when identifying bucket SSTs, excluding inferred bucket measurements from country information, grouping data only accordingly to nation information, and calculating excess diurnal amplitudes relative to a buoy climatology.  To explore results in these sensitivity test, please change values for the variable "revision" in [DA_LME_main.m](DA_LME_main.m).
+
 ## Full Analysis
 [<span style="color:gray">Back to Table of contents</span>](#table-of-contents)
 
