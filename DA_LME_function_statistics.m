@@ -10,7 +10,7 @@ function output = DA_LME_function_statistics(yr_start,reg_sea,revision)
         data = load('All_lme_offsets_and_diurnal_amplitudes_sens_nation_level.mat');  
     elseif revision == 4
         data = load('All_lme_offsets_and_diurnal_amplitudes.mat');
-        data_clim = load('All_lme_offsets_and_diurnal_amplitudes_clim_diurnal.mat');  
+        data_clim = load('All_lme_offsets_and_diurnal_amplitudes_sens_clim_diurnal.mat');  
         data.da = data.da - data_clim.da;
         data.da_std = sqrt(data.da_std.^2 + data_clim.da_std.^2);
     end
@@ -45,7 +45,7 @@ function output = DA_LME_function_statistics(yr_start,reg_sea,revision)
     % *********************************************************************
     % Panel b. york fit
     % *********************************************************************
-    N = 100;
+    N = 10000;
     P.mute_output = 1;
     [slp, ipt, slp_member, ipt_member] = CDC_yorkfit_bt(y,x,y_std,x_std,0,1,N,P); 
     slp_quan = quantile(slp_member,[0.025 0.25 0.75 0.975],1);

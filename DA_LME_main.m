@@ -159,7 +159,7 @@ save(['DA_LME_Statistics',app,'.mat'],...
 % *************************************************************************
 clear;
 close all;
-revision = 4;   % sensitivity tests:
+revision = 0;   % sensitivity tests:
 % 0: standard analysis
 % 1: bucket identification priortizing WMO No.47 metadata
 % 2: do not infer bucket SSTs from country information
@@ -309,7 +309,7 @@ end
 % *************************************************************************
 clear;
 close all;
-revision = 4;   % sensitivity tests:
+revision = 0;   % sensitivity tests:
 % 0: standard analysis
 % 1: bucket identification priortizing WMO No.47 metadata
 % 2: do not infer bucket SSTs from country information

@@ -46,7 +46,7 @@ function DA_LME_function_scatter_plot(method,yr_start,reg_sea,revision)
     % *********************************************************************
     % Set parameters
     % *********************************************************************
-    N       = 100;              % Number of bootstrapping members
+    N       = 10000;              % Number of bootstrapping members
     n_sigma = 2;                % Number of s.d. for error bars
     if strcmp(method,'bucket')
         yr0     = 1879;             % The first year of data
@@ -224,8 +224,8 @@ function DA_LME_plot_square_panels(x,y,x_std,y_std,n,x_eri,y_eri,x_buoy,y_buoy,P
         end
     end
     
-    % plot(x_eri,y_eri,'o','linewi',3,'markersize',6,'color',PP.eri_color);
-    % plot(x_eri,y_eri,'o','linewi',3,'markersize',15,'color',PP.eri_color);  
+    plot(x_eri,y_eri,'o','linewi',3,'markersize',6,'color',PP.eri_color);
+    plot(x_eri,y_eri,'o','linewi',3,'markersize',15,'color',PP.eri_color);  
 
     if ~isnan(y_buoy)
         plot(x_buoy,y_buoy,'bo','linewi',3,'markersize',6,'color',[.9 .1 0]);
