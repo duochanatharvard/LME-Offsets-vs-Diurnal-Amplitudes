@@ -5,7 +5,7 @@ function DA_POST_sum_and_fitting(do_sum,yr_start,yr_end,method,do_nation)
         % Step 1: summing up all measurements
         DA_POST_sum_and_fitting(1,[],[],'bucket');
         DA_POST_sum_and_fitting(1,[],[],'ERI');
-        
+
         % Step 2: loop over years and fit for individual groups
         for yr_start = 1880:1990
             yr_end   = yr_start + 19;
@@ -26,17 +26,17 @@ function DA_POST_sum_and_fitting(do_sum,yr_start,yr_end,method,do_nation)
         end
 
     end
-    
+
     % *************************************************************************
     % Set directories
     % *************************************************************************
     dir_save  = DIURNAL_OI('data4figure');
     % dir_save = '/Users/duochan/Data/DIURNAL_2019/DATA_for_figures_C0_SI_2/';
-    
+
     % *************************************************************************
     % Set parameters
     % *************************************************************************
-    season = 'Annual';                  
+    season = 'Annual';
     mon_list = [1:12];
 
     if strcmp(method,'bucket')
@@ -93,7 +93,7 @@ function DA_POST_sum_and_fitting(do_sum,yr_start,yr_end,method,do_nation)
                             'D1_EX','D2_EX','C1_DCK','C0_YR','C0_MO','C0_LCL',...
                             'Diurnal_signal','Fundemental_SST','Day_indicator',...
                             'C0_CTY_CRT','C98_UID');
-                        
+
                         temp_icoads3 = load(file_icoads3,'C0_SI_4','C0_SI_2','C0_SI_3','C98_UID');
                         [~,pst] = ismember(temp.C98_UID,temp_icoads3.C98_UID);
                         temp.C0_SI_2 = temp_icoads3.C0_SI_2(pst);
@@ -128,10 +128,10 @@ function DA_POST_sum_and_fitting(do_sum,yr_start,yr_end,method,do_nation)
         end
 
     else
-        
+
         % *****************************************************************
         % Step 2. Compute statistics
-        % *****************************************************************        
+        % *****************************************************************
         file_load = [dir_save,'SUM_',method,'_DA_signals_',num2str(yr_list(1)),...
             '_',num2str(yr_list(end)),'_',season,da_app,...
             '_relative_to_',P.relative,'.mat'];
@@ -141,11 +141,11 @@ function DA_POST_sum_and_fitting(do_sum,yr_start,yr_end,method,do_nation)
 
         l = DATA.C0_YR >= yr_start & DATA.C0_YR <= yr_end & ...
             ismember(DATA.Day_indicator,[1]);
-        
+
         if use_C0_SI_2 == 1
             l = l & ismember(DATA.C0_SI_2,[0 1 -2 3]);
         end
-        
+
         % yr      = DATA.C0_YR(l);
         lat     = DATA.C0_LAT(l);
         lon     = DATA.C0_LON(l);
@@ -157,14 +157,14 @@ function DA_POST_sum_and_fitting(do_sum,yr_start,yr_end,method,do_nation)
         exp1    = DATA.D1_EXP(l);
         exp2    = DATA.D2_EXP(l);
         clear('l','DATA')
-        
-        DA_relative_to = 2;            % compute the absolute diurnal amplitude         % TODO
-        if DA_relative_to == 2         % standard case: buoy chan 2019
+
+        DA_relative_to = 1;            % compute the full diurnal amplitude         % TODO
+        if DA_relative_to == 2         % compute climatological diurnal cycles
             di_sig = exp1;
-        elseif  DA_relative_to == 3    % standard case: buoy MB16
+        elseif  DA_relative_to == 3    % excess diurnal cycle to chan 19
+            di_sig = di_sig - exp1;
+        elseif  DA_relative_to == 4    % excess diurnal cycle to buoy MB16
             di_sig = di_sig - exp2;
-        elseif  DA_relative_to == 4    % standard case: buoy MB16
-            di_sig = exp1;
         end
 
         mon_adj             = month;
@@ -178,11 +178,11 @@ function DA_POST_sum_and_fitting(do_sum,yr_start,yr_end,method,do_nation)
         P_dck.do_connect   = 1;
         P_dck.connect_Kobe = 1;
         grp(:,1:3) = LME_function_preprocess_deck(double(grp(:,1:3)),P_dck);
-        
+
         if do_nation == 1
             grp = grp(:,1:2);
         end
-        
+
         [grp_uni,~,J] = unique(grp,'rows');
         key           = 1000;
         c             = hist(J,1:1:max(J));
